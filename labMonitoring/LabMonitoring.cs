@@ -12,8 +12,6 @@ using OpenCvSharp;
 
 namespace LabMonitoring
 {
-    delegate void logOutput(string str);
-
     class Camera
     {
         private const double WIDTH = 640;
@@ -97,11 +95,15 @@ namespace LabMonitoring
     class Twitter
     {
         private OAuthTokens token;
-        private TwitterStream stream;
+        private TwitterStream ustream;
+        private TwitterStream pstream;
         private logOutput l;
+        private KamatteSettings k;
 
         public Twitter(logOutput output = null)
         {
+            l = output;
+
             token = new OAuthTokens
             {
                 ConsumerKey = Properties.Settings.Default.consumerKey,
@@ -109,19 +111,40 @@ namespace LabMonitoring
                 AccessToken = Properties.Settings.Default.accessToken,
                 AccessTokenSecret = Properties.Settings.Default.accessTokenSecret
             };
-            stream = new TwitterStream(token, "labMonitor", null);
-            l = output;
+            k = Properties.Settings.Default.Kamatte;
+            if (k == null)
+            {
+                k = new KamatteSettings();
+                k.WaitTime = 5;
+                k.Targets = new List<TargetUser>();
+                var t = new TargetUser();
+                t.Id = 0;
+                t.Name = "null";
+                t.Filter = "*";
+                k.Targets.Add(t);
+            }
+            log(k.ToString());
+
+            ustream = new TwitterStream(token, "labMonitor", null);
+
+            var opt = new StreamOptions();
+            opt.Follow = k.GetTargetIdArray();
+            opt.Track = k.GetTargetNameArray();
+            pstream = new TwitterStream(token, "labMonitor", opt);
         }
 
         public void start()
         {
             try
             {
-                stream.StartUserStream(null, 
-                    (x) => {l("UserStream stopped: "+x);},
+                ustream.StartUserStream(null, 
+                    (x) => { l("UserStream stopped: " + x); },
                     new StatusCreatedCallback(onStatus),
                     null, null, null, null);
-                
+                pstream.StartPublicStream(
+                    (x) => { l("PublicStream stopped: " + x); },
+                    new StatusCreatedCallback(onPStatus),
+                    null, null);
             }
             catch (TwitterizerException ex)
             {
@@ -132,7 +155,8 @@ namespace LabMonitoring
 
         public void end()
         {
-            stream.EndStream();
+            ustream.EndStream();
+            pstream.EndStream();
         }
 
         private void onStatus(TwitterStatus target)
@@ -175,6 +199,17 @@ namespace LabMonitoring
                     log(res.Content);
                 }
             }
+        }
+
+        private void onPStatus(TwitterStatus target)
+        {
+            log("@"+target.User.ScreenName+": "+target.Text);
+        }
+
+        ~Twitter()
+        {
+            Properties.Settings.Default.Kamatte = k;
+            Properties.Settings.Default.Save();
         }
 
         private void log(string str)

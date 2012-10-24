@@ -10,6 +10,8 @@ using LabMonitoring;
 
 namespace LabMonitoring
 {
+    delegate void logOutput(string str);
+
     public partial class Form1 : Form
     {
         private Twitter t;
@@ -51,6 +53,7 @@ namespace LabMonitoring
                 notifyIcon.Visible = false;
                 t.end();
                 notifyIcon.Dispose();
+                Properties.Settings.Default.Save();
             }
         }
 
