@@ -15,7 +15,11 @@ namespace LabMonitoring
     public partial class Form1 : Form
     {
         private Twitter t;
+        private Camera c;
         private logOutput output;
+
+        private int WM_SYSCOMMAND = 0x112;
+        private IntPtr SC_MINIMIZE = (IntPtr)0xF020;
 
         public Form1()
         {
@@ -25,12 +29,18 @@ namespace LabMonitoring
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
-            Form1_ClientSizeChanged(null, null);
+#if DEBUG
+            this.Show();
+            this.Activate();
+#else
+            this.Hide();
+#endif
 
             try
             {
                 t = new Twitter(output);
+                c = new Camera(output);
+                t.NewUserStatusEvent += c.HandleStatus;
                 t.start();
             }
             catch (Twitterizer.TwitterizerException ex)
@@ -42,18 +52,28 @@ namespace LabMonitoring
             output("Start Twitter UserStream listening");
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void WndProc(ref Message m)
         {
-            if (MessageBox.Show("終了してもよろしいですか？", "終了確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            /* 
+             * 最小化された時にフォームを非表示にする
+             * http://pg2se.com/site/2010/03/c---notifyicon.html
+             */
+            if ((m.Msg == WM_SYSCOMMAND) && (m.WParam == SC_MINIMIZE))
             {
-                e.Cancel = true;
+                this.Hide();
             }
             else
             {
-                notifyIcon.Visible = false;
-                t.end();
-                notifyIcon.Dispose();
-                Properties.Settings.Default.Save();
+                base.WndProc(ref m);
+            }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (notifyIcon.Visible)
+            {
+                e.Cancel = true;
+                this.Hide();
             }
         }
 
@@ -68,11 +88,7 @@ namespace LabMonitoring
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
         {
-            this.Visible = true;
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                this.WindowState = FormWindowState.Normal;
-            }
+            this.Show();
             this.Activate();
         }
 
@@ -97,7 +113,13 @@ namespace LabMonitoring
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            if (MessageBox.Show("終了してもよろしいですか？", "終了確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                notifyIcon.Visible = false;
+                t.end();
+                notifyIcon.Dispose();
+                Application.Exit();
+            }
         }
     }
 }
