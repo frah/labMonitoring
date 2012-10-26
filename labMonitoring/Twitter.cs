@@ -20,22 +20,23 @@ namespace LabMonitoring
     /// </summary>
     class Twitter
     {
+        private static Twitter instance = new Twitter();
         private OAuthTokens token;
         private TwitterStream ustream;
         private TwitterStream pstream;
         private KamatteSettings k;
-        private logOutput l;
+        public logOutput LogOutput { get; set; }
 
-        public event NewStatusHandler NewUserStatusEvent;
-        public event NewStatusHandler NewPublicStatusEvent;
+        public event NewStatusHandler NewUserStatusEvent = delegate(TwitterStatus st, logOutput log) { };
+        public event NewStatusHandler NewPublicStatusEvent = delegate(TwitterStatus st, logOutput log) { };
 
         /// <summary>
         /// Twitterストリームを初期化
         /// </summary>
         /// <param name="output">ログ出力用Delegate</param>
-        public Twitter(logOutput output = null)
+        private Twitter(logOutput output = null)
         {
-            l = output;
+            LogOutput = output;
 
             token = new OAuthTokens
             {
@@ -67,6 +68,15 @@ namespace LabMonitoring
         }
 
         /// <summary>
+        /// Twitterクラスのインスタンスを返す
+        /// </summary>
+        /// <returns></returns>
+        public static Twitter GetInstance()
+        {
+            return instance;
+        }
+
+        /// <summary>
         /// Twitter Streamを開始
         /// </summary>
         public void start()
@@ -74,11 +84,11 @@ namespace LabMonitoring
             try
             {
                 ustream.StartUserStream(null, 
-                    (x) => { l("UserStream stopped: " + x); },
+                    (x) => { LogOutput("UserStream stopped: " + x); },
                     new StatusCreatedCallback(onStatus),
                     null, null, null, null);
                 var p = pstream.StartPublicStream(
-                    (x) => { l("PublicStream stopped: " + x); },
+                    (x) => { LogOutput("PublicStream stopped: " + x); },
                     new StatusCreatedCallback(onPStatus),
                     null, null);
                 var w = (System.Net.HttpWebRequest)p.AsyncState;
@@ -109,7 +119,7 @@ namespace LabMonitoring
             if (!target.Text.StartsWith("@frahabot")) return;
             log("@" + target.User.ScreenName + ": " + target.Text);
 
-            NewUserStatusEvent(target, l);
+            NewUserStatusEvent(target, LogOutput);
         }
 
         /// <summary>
@@ -119,46 +129,30 @@ namespace LabMonitoring
         private void onPStatus(TwitterStatus target)
         {
             log("@"+target.User.ScreenName+": "+target.Text);
-            NewPublicStatusEvent(target, l);
+            NewPublicStatusEvent(target, LogOutput);
         }
 
         /// <summary>
-        /// Updateのstaticラッパ
+        /// Updateのラッパ
         /// </summary>
         /// <param name="text">本文</param>
         /// <param name="opt">オプション</param>
         /// <returns>投稿結果</returns>
-        public static TwitterResponse<TwitterStatus> StatusUpdate(string text, StatusUpdateOptions opt = null)
+        public TwitterResponse<TwitterStatus> StatusUpdate(string text, StatusUpdateOptions opt = null)
         {
-            var t = new OAuthTokens
-            {
-                ConsumerKey = Properties.Settings.Default.consumerKey,
-                ConsumerSecret = Properties.Settings.Default.consumerSecret,
-                AccessToken = Properties.Settings.Default.accessToken,
-                AccessTokenSecret = Properties.Settings.Default.accessTokenSecret
-            };
-
-            return TwitterStatus.Update(t, text, opt);
+            return TwitterStatus.Update(token, text, opt);
         }
 
         /// <summary>
-        /// UpdateWithMediaのstaticラッパ
+        /// UpdateWithMediaのラッパ
         /// </summary>
         /// <param name="text">本文</param>
         /// <param name="b">メディア</param>
         /// <param name="opt">オプション</param>
         /// <returns>投稿結果</returns>
-        public static TwitterResponse<TwitterStatus> StatusUpdateWithMedia(string text, byte[] b, StatusUpdateOptions opt = null)
+        public TwitterResponse<TwitterStatus> StatusUpdateWithMedia(string text, byte[] b, StatusUpdateOptions opt = null)
         {
-            var t = new OAuthTokens
-            {
-                ConsumerKey = Properties.Settings.Default.consumerKey,
-                ConsumerSecret = Properties.Settings.Default.consumerSecret,
-                AccessToken = Properties.Settings.Default.accessToken,
-                AccessTokenSecret = Properties.Settings.Default.accessTokenSecret
-            };
-
-            return TwitterStatus.UpdateWithMedia(t, text, b, opt);
+            return TwitterStatus.UpdateWithMedia(token, text, b, opt);
         }
 
         /// <summary>
@@ -177,9 +171,9 @@ namespace LabMonitoring
         /// <param name="str">出力ログ</param>
         private void log(string str)
         {
-            if (l != null)
+            if (LogOutput != null)
             {
-                l(str);
+                LogOutput(str);
             }
             else
             {

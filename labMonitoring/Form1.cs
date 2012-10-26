@@ -38,7 +38,8 @@ namespace LabMonitoring
 
             try
             {
-                t = new Twitter(output);
+                t = Twitter.GetInstance();
+                t.LogOutput = output;
                 c = new Camera(output);
                 t.NewUserStatusEvent += c.HandleStatus;
                 t.start();

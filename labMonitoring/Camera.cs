@@ -52,6 +52,7 @@ namespace LabMonitoring
         /// <returns>ping形式バイト配列</returns>
         public byte[] Capture()
         {
+            Cv.QueryFrame(cap); // Calibration
             using (IplImage src = Cv.QueryFrame(cap))
             using (MemoryStream ms = new MemoryStream())
             {
@@ -129,7 +130,7 @@ namespace LabMonitoring
             opt.Longitude = 135.734187;
             opt.PlacePin = true;*/
 
-            var res = Twitter.StatusUpdateWithMedia("@" + target.User.ScreenName + " 今はこんな状況です", this.Capture(), opt);
+            var res = Twitter.GetInstance().StatusUpdateWithMedia("@" + target.User.ScreenName + " 今はこんな状況です", this.Capture(), opt);
             if (res.Result.Equals(RequestResult.Success))
             {
                 log("tweet complete");
