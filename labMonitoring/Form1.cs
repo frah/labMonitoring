@@ -16,6 +16,7 @@ namespace LabMonitoring
     {
         private Twitter t;
         private Camera c;
+        private KamatteBot kamatte;
         private logOutput output;
 
         private int WM_SYSCOMMAND = 0x112;
@@ -36,12 +37,25 @@ namespace LabMonitoring
             this.Hide();
 #endif
 
+            t = Twitter.GetInstance();
+            t.LogOutput = output;
+            c = new Camera(output);
+            t.NewUserStatusEvent += c.HandleStatus;
+            t.NewUserStatusEvent += (a, b) =>
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "ぬるぽ"))
+                {
+                    var opt = new Twitterizer.StatusUpdateOptions();
+                    opt.InReplyToStatusId = a.Id;
+                    t.StatusUpdate("@" + a.User.ScreenName + " ｶﾞｯ", opt);
+                }
+            };
+
+            kamatte = new KamatteBot(output);
+            t.NewPublicStatusEvent += kamatte.HandleStatus;
+
             try
             {
-                t = Twitter.GetInstance();
-                t.LogOutput = output;
-                c = new Camera(output);
-                t.NewUserStatusEvent += c.HandleStatus;
                 t.start();
             }
             catch (Twitterizer.TwitterizerException ex)
@@ -50,7 +64,6 @@ namespace LabMonitoring
                 output(ex.ErrorDetails.ToString());
                 Application.Exit();
             }
-            output("Start Twitter UserStream listening");
         }
 
         protected override void WndProc(ref Message m)

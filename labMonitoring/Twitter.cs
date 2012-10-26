@@ -24,7 +24,6 @@ namespace LabMonitoring
         private OAuthTokens token;
         private TwitterStream ustream;
         private TwitterStream pstream;
-        private KamatteSettings k;
         public logOutput LogOutput { get; set; }
 
         public event NewStatusHandler NewUserStatusEvent = delegate(TwitterStatus st, logOutput log) { };
@@ -45,22 +44,10 @@ namespace LabMonitoring
                 AccessToken = Properties.Settings.Default.accessToken,
                 AccessTokenSecret = Properties.Settings.Default.accessTokenSecret
             };
-            k = Properties.Settings.Default.Kamatte;
-            if (k == null)
-            {
-                k = new KamatteSettings();
-                k.WaitTime = 5;
-                k.Targets = new List<TargetUser>();
-                var t = new TargetUser();
-                t.Id = 0;
-                t.Name = "null";
-                t.Filter = "*";
-                k.Targets.Add(t);
-            }
-            log(k.ToString());
 
             ustream = new TwitterStream(token, "labMonitor", null);
 
+            var k = Properties.Settings.Default.Kamatte;
             var opt = new StreamOptions();
             opt.Follow = k.GetTargetIdArray();
             opt.Track = k.GetTargetNameArray();
@@ -84,20 +71,19 @@ namespace LabMonitoring
             try
             {
                 ustream.StartUserStream(null, 
-                    (x) => { LogOutput("UserStream stopped: " + x); },
+                    (x) => { log("UserStream stopped: " + x); },
                     new StatusCreatedCallback(onStatus),
                     null, null, null, null);
-                var p = pstream.StartPublicStream(
-                    (x) => { LogOutput("PublicStream stopped: " + x); },
+                pstream.StartPublicStream(
+                    (x) => { log("PublicStream stopped: " + x); },
                     new StatusCreatedCallback(onPStatus),
                     null, null);
-                var w = (System.Net.HttpWebRequest)p.AsyncState;
-                log(w.Address.ToString());
             }
             catch (TwitterizerException ex)
             {
                 throw ex;
             }
+            log("Start Twitter UserStream listening");
             //System.Threading.Thread.Sleep(-1);
         }
 
@@ -116,9 +102,6 @@ namespace LabMonitoring
         /// <param name="target">受信したStatus</param>
         private void onStatus(TwitterStatus target)
         {
-            if (!target.Text.StartsWith("@frahabot")) return;
-            log("@" + target.User.ScreenName + ": " + target.Text);
-
             NewUserStatusEvent(target, LogOutput);
         }
 
@@ -128,7 +111,6 @@ namespace LabMonitoring
         /// <param name="target">受信したStatus</param>
         private void onPStatus(TwitterStatus target)
         {
-            log("@"+target.User.ScreenName+": "+target.Text);
             NewPublicStatusEvent(target, LogOutput);
         }
 
@@ -156,16 +138,6 @@ namespace LabMonitoring
         }
 
         /// <summary>
-        /// デストラクタ
-        /// 設定等を保存
-        /// </summary>
-        ~Twitter()
-        {
-            Properties.Settings.Default.Kamatte = k;
-            Properties.Settings.Default.Save();
-        }
-
-        /// <summary>
         /// ログ出力用関数
         /// </summary>
         /// <param name="str">出力ログ</param>
@@ -173,7 +145,7 @@ namespace LabMonitoring
         {
             if (LogOutput != null)
             {
-                LogOutput(str);
+                LogOutput(this.GetType().FullName + "\r\n" + str);
             }
             else
             {

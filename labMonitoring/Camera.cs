@@ -24,7 +24,6 @@ namespace LabMonitoring
         private CvCapture cap;
         private CvHaarClassifierCascade cvHCC;
         private CvMemStorage stor;
-        private logOutput l;
 
         /// <summary>
         /// 1つ目のカメラでカメラ初期化
@@ -32,6 +31,8 @@ namespace LabMonitoring
         /// <param name="output"></param>
         public Camera(logOutput output = null)
         {
+            LogOutput = output;
+
             // カメラの用意
             cap = Cv.CreateCameraCapture(0);
             log(cap.CaptureType + ", " + cap.FrameWidth + "x" + cap.FrameHeight + ", " + cap.Mode);
@@ -42,8 +43,6 @@ namespace LabMonitoring
             // 検出器の用意
             cvHCC = Cv.Load<CvHaarClassifierCascade>("haarcascade_profileface.xml");
             stor = Cv.CreateMemStorage(0);
-
-            l = output;
         }
 
         /// <summary>
@@ -99,29 +98,12 @@ namespace LabMonitoring
             Cv.ReleaseCapture(cap);
         }
 
-        /// <summary>
-        /// ログ出力用関数
-        /// </summary>
-        /// <param name="str">出力ログ</param>
-        private void log(string str)
+        public override void HandleStatus(TwitterStatus target, logOutput log)
         {
-            if (l != null)
-            {
-                l(str);
-            }
-            else
-            {
-#if DEBUG
-                Console.WriteLine(str);
-#endif
-            }
-        }
-
-        public void HandleStatus(TwitterStatus target, logOutput log)
-        {
+            if (!target.Text.StartsWith("@frahabot")) return;
             if (!target.Text.Contains("カメラ")) return;
 
-            log("Recieve command tweet");
+            log("Recieve command tweet: @" + target.User.ScreenName + ": " + target.Text);
 
             StatusUpdateOptions opt = new StatusUpdateOptions();
             opt.InReplyToStatusId = target.Id;

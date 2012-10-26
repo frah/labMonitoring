@@ -117,6 +117,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="ITweetHandler.cs" />
+    <Compile Include="KamatteBot.cs" />
     <Compile Include="KamatteSettings.cs" />
     <Compile Include="Twitter.cs" />
     <Compile Include="Form1.cs">
