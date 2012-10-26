@@ -114,15 +114,15 @@ namespace LabMonitoring
                 return;
             }
 
-            if (logTextBox.Text.Length > 32767)
+            if (logTextBox.Text.Length > logTextBox.MaxLength)
             {
                 logTextBox.Text = "";
             }
+            logTextBox.HideSelection = false;
+            logTextBox.AppendText("[" + DateTime.Now.ToString() + "] " + text + "\r\n");
             logTextBox.SelectionStart = logTextBox.Text.Length;
-            logTextBox.SelectionLength = 0;
-            logTextBox.SelectedText = "[" + DateTime.Now.ToString() + "] " + text + "\r\n";
-            logTextBox.SelectionStart = logTextBox.Text.Length;
-            logTextBox.SelectionLength = 0;
+            logTextBox.Focus();
+            logTextBox.ScrollToCaret();
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)

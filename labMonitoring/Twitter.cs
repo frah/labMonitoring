@@ -26,6 +26,10 @@ namespace LabMonitoring
         private TwitterStream pstream;
         public logOutput LogOutput { get; set; }
 
+        /*
+         * nullチェックの手間を省く
+         * http://tec.jpn.ph/comp/delegateandevent.html
+         */
         public event NewStatusHandler NewUserStatusEvent = delegate(TwitterStatus st, logOutput log) { };
         public event NewStatusHandler NewPublicStatusEvent = delegate(TwitterStatus st, logOutput log) { };
 
