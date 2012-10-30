@@ -56,8 +56,7 @@ namespace LabMonitoring
 
             /* Set timer */
             kamatteCheckTimer = new Timer(KamatteCheckTask, null, 60000, 60000);
-            TimeSpan ts = DateTime.Parse(DateTime.Now.AddDays(1).ToShortDateString()) - DateTime.Now;
-            countClearTimer = new Timer(CountClearTask, null, ts, new TimeSpan(24, 0, 0));
+            countClearTimer = TimerUtil.DailyTimer(CountClearTask);
         }
 
         public override void HandleStatus(TwitterStatus target, logOutput log)
@@ -126,7 +125,6 @@ namespace LabMonitoring
         /// <param name="sender">イベントセンダ</param>
         private void KamatteCheckTask(object sender)
         {
-            log("ツッコミ判定スタート");
             var now = DateTime.Now;
             for (int i = watchingList.Count - 1; i >= 0; i--)
             {
@@ -145,6 +143,7 @@ namespace LabMonitoring
         /// <param name="sender">イベントセンダ</param>
         private void CountClearTask(object sender)
         {
+            log("Daily task start");
             Settings.ClearDailyCount();
         }
 
