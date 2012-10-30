@@ -17,6 +17,7 @@ namespace LabMonitoring
         private Twitter t;
         private Camera c;
         private KamatteBot kamatte;
+        private CheckCalendar cal;
         private logOutput output;
 
         private int WM_SYSCOMMAND = 0x112;
@@ -48,11 +49,13 @@ namespace LabMonitoring
                     var opt = new Twitterizer.StatusUpdateOptions();
                     opt.InReplyToStatusId = a.Id;
                     t.StatusUpdate("@" + a.User.ScreenName + " ｶﾞｯ", opt);
+                    b("ｶﾞｯ to @" + a.User.ScreenName);
                 }
             };
 
             kamatte = new KamatteBot(output);
             t.NewPublicStatusEvent += kamatte.HandleStatus;
+            cal = new CheckCalendar(output);
 
             try
             {
