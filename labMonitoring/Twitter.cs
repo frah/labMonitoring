@@ -18,13 +18,12 @@ namespace LabMonitoring
     /// <summary>
     /// Twitter関連処理クラス
     /// </summary>
-    class Twitter
+    class Twitter : Logger
     {
         private static Twitter instance = new Twitter();
         private OAuthTokens token;
         private TwitterStream ustream;
         private TwitterStream pstream;
-        public logOutput LogOutput { get; set; }
 
         /*
          * nullチェックの手間を省く
@@ -126,7 +125,12 @@ namespace LabMonitoring
         /// <returns>投稿結果</returns>
         public TwitterResponse<TwitterStatus> StatusUpdate(string text, StatusUpdateOptions opt = null)
         {
+#if DEBUG
+            System.Console.WriteLine("[DEBUG] Update status: " + text);
+            return null;
+#else
             return TwitterStatus.Update(token, text, opt);
+#endif
         }
 
         /// <summary>
@@ -138,25 +142,12 @@ namespace LabMonitoring
         /// <returns>投稿結果</returns>
         public TwitterResponse<TwitterStatus> StatusUpdateWithMedia(string text, byte[] b, StatusUpdateOptions opt = null)
         {
-            return TwitterStatus.UpdateWithMedia(token, text, b, opt);
-        }
-
-        /// <summary>
-        /// ログ出力用関数
-        /// </summary>
-        /// <param name="str">出力ログ</param>
-        private void log(string str)
-        {
-            if (LogOutput != null)
-            {
-                LogOutput(this.GetType().FullName + "\r\n" + str);
-            }
-            else
-            {
 #if DEBUG
-                Console.WriteLine(str);
+            System.Console.WriteLine("[DEBUG] Update status with media: " + text);
+            return null;
+#else
+            return TwitterStatus.UpdateWithMedia(token, text, b, opt);
 #endif
-            }
         }
     }
 }

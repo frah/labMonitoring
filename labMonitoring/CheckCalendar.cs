@@ -7,18 +7,19 @@ using DDay.iCal;
 
 namespace LabMonitoring
 {
-    class CheckCalendar
+    /// <summary>
+    /// カレンダのイベントチェックを行う日次タスク
+    /// </summary>
+    class CheckCalendar : DailyTask
     {
         const string bottiPost = "【WARNING】 ぼっち飯警報発令！ 速やかに食事の準備を始めましょう";
         public readonly Dictionary<string, string> TargetCalendar;
-        public logOutput log;
-        private Timer calUpdateTimer;
         private List<Timer> calTimer;
         private Timer bottiTimer;
 
         public CheckCalendar(logOutput output)
         {
-            log = output;
+            LogOutput = output;
             TargetCalendar = new Dictionary<string, string>(3);
             TargetCalendar.Add(
                 // ubi-lab
@@ -34,16 +35,16 @@ namespace LabMonitoring
                 "研究室内イベント");
 
             calTimer = new List<System.Threading.Timer>();
-            calUpdateTimer = TimerUtil.DailyTimer(GetCalEvents, 7);
+            Hour = 7;
         }
 
-        private void GetCalEvents(Object sender)
+        public override void run(Object sender)
         {
             /* Clean list */
             foreach (Timer t in calTimer) {
                 t.Dispose();
             }
-            bottiTimer.Dispose();
+            if (bottiTimer != null) bottiTimer.Dispose();
             calTimer.Clear();
 
             bool bottiFlag = true;

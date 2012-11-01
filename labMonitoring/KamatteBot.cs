@@ -11,7 +11,7 @@ namespace LabMonitoring
     /// <summary>
     /// 誰かかまってやれよBOT
     /// </summary>
-    class KamatteBot : ITweetHandler
+    class KamatteBot : Logger, ITweetHandler
     {
         /// <summary>
         /// ユーザ別設定など
@@ -59,7 +59,7 @@ namespace LabMonitoring
             countClearTimer = TimerUtil.DailyTimer(CountClearTask);
         }
 
-        public override void HandleStatus(TwitterStatus target, logOutput log)
+        public void HandleStatus(TwitterStatus target, logOutput log)
         {
             if (target.InReplyToStatusId != null)
             {
