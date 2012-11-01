@@ -17,8 +17,8 @@ namespace LabMonitoring
         private Twitter t;
         private Camera c;
         private KamatteBot kamatte;
-        private CheckCalendar cal;
         private logOutput output;
+        private List<DailyTask> DailyTasks = new List<DailyTask>();
 
         private int WM_SYSCOMMAND = 0x112;
         private IntPtr SC_MINIMIZE = (IntPtr)0xF020;
@@ -38,7 +38,7 @@ namespace LabMonitoring
             this.Hide();
 #endif
             System.Diagnostics.FileVersionInfo ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            this.Text = ver.ProductName + " ver." + ver.ProductVersion;
+            this.Text = ver.ProductName + " " + ver.ProductVersion;
 
             t = Twitter.GetInstance();
             t.LogOutput = output;
@@ -46,7 +46,7 @@ namespace LabMonitoring
             t.NewUserStatusEvent += c.HandleStatus;
             t.NewUserStatusEvent += (a, b) =>
             {
-                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "ぬるぽ"))
+                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "ぬ[\n\r]?る[\n\r]?ぽ"))
                 {
                     var opt = new Twitterizer.StatusUpdateOptions();
                     opt.InReplyToStatusId = a.Id;
@@ -57,7 +57,6 @@ namespace LabMonitoring
 
             kamatte = new KamatteBot(output);
             t.NewPublicStatusEvent += kamatte.HandleStatus;
-            cal = new CheckCalendar(output);
 
             try
             {
@@ -68,6 +67,13 @@ namespace LabMonitoring
                 output(ex.Result.ToString());
                 output(ex.ErrorDetails.ToString());
                 Application.Exit();
+            }
+
+            DailyTasks.Add(new CheckCalendar(output));
+            DailyTasks.Add(new WeatherPost(output));
+            foreach (var d in DailyTasks)
+            {
+                d.start();
             }
         }
 
@@ -136,6 +142,10 @@ namespace LabMonitoring
             {
                 notifyIcon.Visible = false;
                 t.end();
+                foreach (var d in DailyTasks)
+                {
+                    d.stop();
+                }
                 notifyIcon.Dispose();
                 Application.Exit();
             }
