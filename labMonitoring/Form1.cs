@@ -54,6 +54,13 @@ namespace LabMonitoring
                     b("ｶﾞｯ to @" + a.User.ScreenName);
                 }
             };
+            t.NewUserStatusEvent += (a, b) =>
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "((眠|ねむ)い|ねむねむ|[寝ね]てない)"))
+                {
+                    Twitter.GetInstance().StatusUpdate("@" + a.User.ScreenName + " 寝ろ #nero", new Twitterizer.StatusUpdateOptions() { InReplyToStatusId = a.Id });
+                }
+            };
 
             kamatte = new KamatteBot(output);
             t.NewPublicStatusEvent += kamatte.HandleStatus;
