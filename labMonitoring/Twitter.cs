@@ -71,23 +71,40 @@ namespace LabMonitoring
         /// </summary>
         public void start()
         {
+            StartUserStream();
+            StartPublicStream();
+            log("Start Twitter UserStream listening");
+        }
+
+        private IAsyncResult StartUserStream()
+        {
             try
             {
-                ustream.StartUserStream(null, 
-                    (x) => { log("UserStream stopped: " + x); },
-                    new StatusCreatedCallback(onStatus),
-                    null, null, null, null);
-                pstream.StartPublicStream(
-                    (x) => { log("PublicStream stopped: " + x); },
-                    new StatusCreatedCallback(onPStatus),
-                    null, null);
+                return ustream.StartUserStream(null,
+                        (x) => { log("UserStream stopped: " + x); StartUserStream(); },
+                        new StatusCreatedCallback(onStatus),
+                        null, null, null, null);
             }
             catch (TwitterizerException ex)
             {
-                throw ex;
+                log(ex.Message);
             }
-            log("Start Twitter UserStream listening");
-            //System.Threading.Thread.Sleep(-1);
+            return null;
+        }
+        private IAsyncResult StartPublicStream()
+        {
+            try
+            {
+                return pstream.StartPublicStream(
+                        (x) => { log("PublicStream stopped: " + x); StartPublicStream(); },
+                        new StatusCreatedCallback(onPStatus),
+                        null, null);
+            }
+            catch (TwitterizerException ex)
+            {
+                log(ex.Message);
+            }
+            return null;
         }
 
         /// <summary>
@@ -127,7 +144,7 @@ namespace LabMonitoring
         {
 #if DEBUG
             System.Console.WriteLine("[DEBUG] Update status: " + text);
-            return null;
+            return new TwitterResponse<TwitterStatus>() { Result = RequestResult.Success };
 #else
             return TwitterStatus.Update(token, text, opt);
 #endif
@@ -144,7 +161,7 @@ namespace LabMonitoring
         {
 #if DEBUG
             System.Console.WriteLine("[DEBUG] Update status with media: " + text);
-            return null;
+            return new TwitterResponse<TwitterStatus>() { Result = RequestResult.Success };
 #else
             return TwitterStatus.UpdateWithMedia(token, text, b, opt);
 #endif

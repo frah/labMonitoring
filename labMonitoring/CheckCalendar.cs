@@ -114,6 +114,7 @@ namespace LabMonitoring
                 post = "[今日の予定] 今日は予定はありません．";
             }
 
+            log("CalendarTweet: " + post);
             Twitter.GetInstance().StatusUpdate(post);
 
             if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday || DateTime.Today.DayOfWeek == DayOfWeek.Sunday) bottiFlag = false;
