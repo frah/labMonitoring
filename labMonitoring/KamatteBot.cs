@@ -126,14 +126,19 @@ namespace LabMonitoring
         private void KamatteCheckTask(object sender)
         {
             var now = DateTime.Now;
-            for (int i = watchingList.Count - 1; i >= 0; i--)
+            List<decimal> removals = new List<decimal>();
+            foreach (var s in watchingList.Values)
             {
-                TimeSpan ts = now - watchingList[i].CreatedDate;
+                TimeSpan ts = now - s.CreatedDate;
                 if (ts.TotalMinutes > Settings.WaitTime)
                 {
-                    Kamatte(watchingList[i]);
-                    watchingList.Remove(watchingList[i].Id);
+                    Kamatte(s);
+                    removals.Add(s.Id);
                 }
+            }
+            foreach (var id in removals)
+            {
+                watchingList.Remove(id);
             }
         }
 
