@@ -35,7 +35,7 @@ namespace LabMonitoring
 
             // カメラの用意
             cap = Cv.CreateCameraCapture(0);
-            log(cap.CaptureType + ", " + cap.FrameWidth + "x" + cap.FrameHeight + ", " + cap.Mode);
+            Log(cap.CaptureType + ", " + cap.FrameWidth + "x" + cap.FrameHeight + ", " + cap.Mode);
 
             Cv.SetCaptureProperty(cap, CaptureProperty.FrameWidth, WIDTH);
             Cv.SetCaptureProperty(cap, CaptureProperty.FrameHeight, HEIGHT);
@@ -74,7 +74,7 @@ namespace LabMonitoring
 
                     foreach (CvRect rect in face)
                     {
-                        log(rect.ToString());
+                        Log(rect.ToString());
                         Cv.Rectangle(dst, rect, CvColor.Red, 2, LineType.AntiAlias);
                     }
                 }
@@ -103,7 +103,7 @@ namespace LabMonitoring
             if (!target.Text.StartsWith("@frahabot")) return;
             if (!target.Text.Contains("カメラ")) return;
 
-            log("Recieve command tweet: @" + target.User.ScreenName + ": " + target.Text);
+            Log("Recieve command tweet: @" + target.User.ScreenName + ": " + target.Text);
 
             StatusUpdateOptions opt = new StatusUpdateOptions();
             opt.InReplyToStatusId = target.Id;
@@ -115,13 +115,13 @@ namespace LabMonitoring
             var res = Twitter.GetInstance().StatusUpdateWithMedia("@" + target.User.ScreenName + " 今はこんな状況です", this.Capture(), opt);
             if (res.Result.Equals(RequestResult.Success))
             {
-                log("tweet complete");
+                Log("tweet complete");
             }
             else
             {
-                log(res.Result.ToString());
-                log(res.ErrorMessage);
-                log(res.Content);
+                Log(res.Result.ToString());
+                Log(res.ErrorMessage);
+                Log(res.Content);
             }
         }
     }

@@ -54,12 +54,12 @@ namespace LabMonitoring
             }
             catch (Exception ex)
             {
-                log(ex.Message);
+                Log(ex.Message);
             }
 
             if (weather == "" || temp == "")
             {
-                log("Any errors occurred");
+                Log("Any errors occurred");
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace LabMonitoring
             }
             catch (Exception ex)
             {
-                log(ex.Message);
+                Log(ex.Message);
             }
             finally
             {
@@ -97,7 +97,7 @@ namespace LabMonitoring
             sb.Append("降水確率は").Append((int)rainfall).Append("％，");
             sb.Append("洗濯指数は").Append(cloth).Append("です．");
 
-            log("WeatherTweet: " + sb.ToString());
+            Log("WeatherTweet: " + sb.ToString());
             Twitter.GetInstance().StatusUpdate(sb.ToString());
         }
     }

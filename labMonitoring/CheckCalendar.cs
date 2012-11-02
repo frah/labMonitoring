@@ -99,7 +99,7 @@ namespace LabMonitoring
                 }
                 catch (Exception ex)
                 {
-                    log("Calendar load failed: " + ex.ToString());
+                    Log("Calendar load failed: " + ex.ToString());
                 }
             }
 
@@ -114,7 +114,7 @@ namespace LabMonitoring
                 post = "[今日の予定] 今日は予定はありません．";
             }
 
-            log("CalendarTweet: " + post);
+            Log("CalendarTweet: " + post);
             Twitter.GetInstance().StatusUpdate(post);
 
             if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday || DateTime.Today.DayOfWeek == DayOfWeek.Sunday) bottiFlag = false;

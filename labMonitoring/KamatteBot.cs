@@ -50,7 +50,7 @@ namespace LabMonitoring
                 t.Filter = "*";
                 Settings.Targets.Add(t);
             }
-            log(Settings.ToString());
+            Log(Settings.ToString());
 
             watchingList = new Dictionary<decimal, TwitterStatus>();
 
@@ -69,7 +69,7 @@ namespace LabMonitoring
                     if (target.User.Id == target.InReplyToUserId)
                     {
                         /* Self reply message */
-                        log("Receive a self reply message: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text + " to " + target.InReplyToStatusId);
+                        Log("Receive a self reply message: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text + " to " + target.InReplyToStatusId);
                         Kamatte(target);
                         if (watchingList.ContainsKey((decimal)target.InReplyToStatusId))
                         {
@@ -80,7 +80,7 @@ namespace LabMonitoring
                     {
                         /* Other's tweet */
                         /* A message sent from othe to target */
-                        log("Receive a message sent from other to target: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text + " to " + target.InReplyToStatusId);
+                        Log("Receive a message sent from other to target: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text + " to " + target.InReplyToStatusId);
                         if (watchingList.ContainsKey((decimal)target.InReplyToStatusId))
                         {
                             watchingList.Remove((decimal)target.InReplyToStatusId);
@@ -113,7 +113,7 @@ namespace LabMonitoring
                     if (!Regex.IsMatch(target.Text, f, RegexOptions.IgnoreCase)) return;
                     if (Regex.IsMatch(target.Source, ">ikejun<")) return;
 
-                    log("Receive a target tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
+                    Log("Receive a target tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
                     watchingList.Add(target.Id, target);
                 }
             }
@@ -148,7 +148,7 @@ namespace LabMonitoring
         /// <param name="sender">イベントセンダ</param>
         private void CountClearTask(object sender)
         {
-            log("Daily task start");
+            Log("Daily task start");
             Settings.ClearDailyCount();
         }
 
@@ -168,11 +168,11 @@ namespace LabMonitoring
                 var r = Twitter.GetInstance().StatusUpdate(sb.Length > 140 ? sb.ToString(0, 139) + "…" : sb.ToString());
                 if (r.Result.Equals(RequestResult.Success))
                 {
-                    log("Tweet kamatte!: @" + s.User.ScreenName + ", Count: " + t.DailyKamatteCount + "/" + t.TotalKamatteCount);
+                    Log("Tweet kamatte!: @" + s.User.ScreenName + ", Count: " + t.DailyKamatteCount + "/" + t.TotalKamatteCount);
                 }
                 else
                 {
-                    log("Tweet error: " + r.ErrorMessage);
+                    Log("Tweet error: " + r.ErrorMessage);
                 }
             }
         }

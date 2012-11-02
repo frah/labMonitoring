@@ -73,7 +73,7 @@ namespace LabMonitoring
         {
             StartUserStream();
             StartPublicStream();
-            log("Start Twitter UserStream listening");
+            Log("Start Twitter UserStream listening");
         }
 
         private IAsyncResult StartUserStream()
@@ -81,13 +81,13 @@ namespace LabMonitoring
             try
             {
                 return ustream.StartUserStream(null,
-                        (x) => { log("UserStream stopped: " + x); StartUserStream(); },
+                        (x) => { Log("UserStream stopped: " + x); StartUserStream(); },
                         new StatusCreatedCallback(onStatus),
                         null, null, null, null);
             }
             catch (TwitterizerException ex)
             {
-                log(ex.Message);
+                Log(ex.Message);
             }
             return null;
         }
@@ -96,13 +96,13 @@ namespace LabMonitoring
             try
             {
                 return pstream.StartPublicStream(
-                        (x) => { log("PublicStream stopped: " + x); StartPublicStream(); },
+                        (x) => { Log("PublicStream stopped: " + x); StartPublicStream(); },
                         new StatusCreatedCallback(onPStatus),
                         null, null);
             }
             catch (TwitterizerException ex)
             {
-                log(ex.Message);
+                Log(ex.Message);
             }
             return null;
         }

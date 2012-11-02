@@ -13,7 +13,7 @@ namespace LabMonitoring
         /// ログ出力用関数
         /// </summary>
         /// <param name="str">出力ログ</param>
-        protected void log(string str)
+        protected void Log(string str)
         {
             if (LogOutput != null)
             {
