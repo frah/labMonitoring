@@ -98,7 +98,7 @@ namespace LabMonitoring
                     {
                         f = t.Filter;
                     }
-                    if (f == null || f.Equals(""))
+                    if (string.IsNullOrEmpty(f))
                     {
                         f = ".*";
                     }

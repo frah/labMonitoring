@@ -16,6 +16,8 @@ namespace LabMonitoring
             Trace.Listeners.Remove("Default");
             StreamWriter sw = new StreamWriter("labMonitoring.log") { AutoFlush = true };
             Trace.Listeners.Add(new TextWriterTraceListener(TextWriter.Synchronized(sw), "Log"));
+            FileVersionInfo ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            Trace.WriteLine(string.Format(">>> {0} {1} <<<", ver.ProductName, ver.ProductVersion));
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

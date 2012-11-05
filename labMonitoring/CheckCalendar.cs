@@ -64,7 +64,7 @@ namespace LabMonitoring
                         StringBuilder sbb = new StringBuilder(140);
                         sbb.Append("[次の予定] ").Append(rc.Summary);
 
-                        if (rc.Location != "")
+                        if (!string.IsNullOrEmpty(rc.Location))
                         {
                             sbb.Append(" at ").Append(rc.Location);
                         }
@@ -73,6 +73,7 @@ namespace LabMonitoring
                         DateTime postTime;
                         if (rc.IsAllDay)
                         {
+                            if (!rc.Start.AddDays(1).Equals(DateTime.Today)) continue;
                             /* All day event */
                             sbb.Append("終日");
                             postTime = DateTime.Now.AddMinutes(3);
