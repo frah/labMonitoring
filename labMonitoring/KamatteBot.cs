@@ -163,7 +163,7 @@ namespace LabMonitoring
             {
                 var sb = new StringBuilder("誰かかまってやれよ！ ");
                 sb.Append("(本日").Append(t.DailyKamatteCount).Append("回目, 累計").Append(t.TotalKamatteCount).Append("回) ");
-                sb.Append("RT ").Append(s.User.ScreenName).Append(": ").Append(s.Text);
+                sb.Append("RT ").Append(s.User.ScreenName).Append(": ").Append(s.Text.Replace("@", "(at)"));
 
                 var r = Twitter.GetInstance().StatusUpdate(sb.Length > 140 ? sb.ToString(0, 139) + "…" : sb.ToString());
                 if (r.Result.Equals(RequestResult.Success))
