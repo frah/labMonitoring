@@ -88,6 +88,14 @@ namespace LabMonitoring
             }
             else
             {
+                /* Global target */
+                if (Regex.IsMatch(target.Text, Settings.GlobalFilter))
+                {
+                    Log("Receive a global filter tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
+                    watchingList.Add(target.Id, target);
+                    return;
+                }
+
                 /* Recieve a nomal message */
                 if (Settings.GetTargetIdArray().Contains(target.User.Id.ToString()) && target.RetweetedStatus == null)
                 {
@@ -112,13 +120,6 @@ namespace LabMonitoring
                     if (Regex.IsMatch(target.Source, ">ikejun<")) return;
 
                     Log("Receive a target tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
-                    watchingList.Add(target.Id, target);
-                }
-
-                /* Global target */
-                if (Regex.IsMatch(target.Text, Settings.GlobalFilter))
-                {
-                    Log("Receive a global filter tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
                     watchingList.Add(target.Id, target);
                 }
             }
@@ -164,21 +165,21 @@ namespace LabMonitoring
         private void Kamatte(TwitterStatus s)
         {
             var t = Settings.IncrementKamatteCount(s.User.Id);
+            var sb = new StringBuilder("誰かかまってやれよ！ ");
             if (t != null)
             {
-                var sb = new StringBuilder("誰かかまってやれよ！ ");
                 sb.Append("(本日").Append(t.DailyKamatteCount).Append("回目, 累計").Append(t.TotalKamatteCount).Append("回) ");
-                sb.Append("RT ").Append(s.User.ScreenName).Append(": ").Append(s.Text.Replace("@", "(at)"));
+            }
+            sb.Append("RT ").Append(s.User.ScreenName).Append(": ").Append(s.Text.Replace("@", "(at)"));
 
-                var r = Twitter.GetInstance().StatusUpdate(sb.Length > 140 ? sb.ToString(0, 139) + "…" : sb.ToString());
-                if (r.Result.Equals(RequestResult.Success))
-                {
-                    Log("Tweet kamatte!: @" + s.User.ScreenName + ", Count: " + t.DailyKamatteCount + "/" + t.TotalKamatteCount);
-                }
-                else
-                {
-                    Log("Tweet error: " + r.ErrorMessage);
-                }
+            var r = Twitter.GetInstance().StatusUpdate(sb.Length > 140 ? sb.ToString(0, 139) + "…" : sb.ToString());
+            if (r.Result.Equals(RequestResult.Success))
+            {
+                Log("Tweet kamatte!: @" + s.User.ScreenName + ", Count: " + t.DailyKamatteCount + "/" + t.TotalKamatteCount);
+            }
+            else
+            {
+                Log("Tweet error: " + r.ErrorMessage);
             }
         }
 
