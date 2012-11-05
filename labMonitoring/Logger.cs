@@ -26,5 +26,15 @@ namespace LabMonitoring
 #endif
             }
         }
+
+        /// <summary>
+        /// 条件に一致した時にログを出力
+        /// </summary>
+        /// <param name="test">条件</param>
+        /// <param name="str">出力文字列</param>
+        protected void Assert(bool test, string str)
+        {
+            if (test) Log(str);
+        }
     }
 }

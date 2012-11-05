@@ -100,7 +100,8 @@ namespace LabMonitoring
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("WaitTime: "+WaitTime);
+            sb.AppendLine("WaitTime: " + WaitTime);
+            sb.AppendLine("GlobalFilter: " + GlobalFilter);
             sb.AppendLine("Targets:");
             foreach (var t in Targets) {
                 sb.AppendLine(t.ToString());

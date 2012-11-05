@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,7 @@ namespace LabMonitoring
 
         private int WM_SYSCOMMAND = 0x112;
         private IntPtr SC_MINIMIZE = (IntPtr)0xF020;
+        private Random rand = new Random();
 
         public Form1()
         {
@@ -51,7 +53,7 @@ namespace LabMonitoring
                     string[] text = { "ｶﾞｯ", "■━⊂(　・∀・) 彡 ｶﾞｯ☆`Д´)ﾉ", "ヽ( ・∀・)ﾉ┌┛ｶﾞｯΣ(ﾉ`Д´)ﾉ" };
                     var opt = new Twitterizer.StatusUpdateOptions();
                     opt.InReplyToStatusId = a.Id;
-                    t.StatusUpdate("@" + a.User.ScreenName + " " + text[new Random().Next(text.Length)], opt);
+                    t.StatusUpdate("@" + a.User.ScreenName + " " + text[rand.Next(text.Length)], opt);
                     b("ｶﾞｯ to @" + a.User.ScreenName);
                 }
             };
@@ -59,7 +61,8 @@ namespace LabMonitoring
             {
                 if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "((眠|ねむ)い|ねむねむ|[寝ね]てない)"))
                 {
-                    Twitter.GetInstance().StatusUpdate("@" + a.User.ScreenName + " 寝ろ #nero", new Twitterizer.StatusUpdateOptions() { InReplyToStatusId = a.Id });
+                    string[] kao = { "", "(☝ ՞ਊ ՞)☝", "(´◉◞౪◟◉)", "(´☣益☣)" };
+                    Twitter.GetInstance().StatusUpdate("@" + a.User.ScreenName + " " + kao[rand.Next(kao.Length)] + " 寝ろ #nero", new Twitterizer.StatusUpdateOptions() { InReplyToStatusId = a.Id });
                 }
             };
 
@@ -138,11 +141,13 @@ namespace LabMonitoring
             {
                 logTextBox.Text = "";
             }
+            string logText = "[" + DateTime.Now.ToString() + "] " + text + "\r\n";
             logTextBox.HideSelection = false;
-            logTextBox.AppendText("[" + DateTime.Now.ToString() + "] " + text + "\r\n");
+            logTextBox.AppendText(logText);
             logTextBox.SelectionStart = logTextBox.Text.Length;
             logTextBox.Focus();
             logTextBox.ScrollToCaret();
+            Trace.WriteLine(logText);
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)

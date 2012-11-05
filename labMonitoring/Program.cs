@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.IO;
 using System.Windows.Forms;
 
 namespace LabMonitoring
@@ -10,9 +12,22 @@ namespace LabMonitoring
         [STAThread]
         static void Main(string[] args)
         {
+            /* Set trace listener */
+            Trace.Listeners.Remove("Default");
+            StreamWriter sw = new StreamWriter("labMonitoring.log") { AutoFlush = true };
+            Trace.Listeners.Add(new TextWriterTraceListener(TextWriter.Synchronized(sw), "Log"));
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            try
+            {
+                Application.Run(new Form1());
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message + "at" + ex.Source);
+                Trace.WriteLine(ex.StackTrace);
+            }
         }
     }
 }
