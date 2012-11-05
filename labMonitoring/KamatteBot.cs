@@ -43,6 +43,7 @@ namespace LabMonitoring
             {
                 Settings = new KamatteSettings();
                 Settings.WaitTime = 5;
+                Settings.GlobalFilter = "";
                 Settings.Targets = new List<TargetUser>();
                 var t = new TargetUser();
                 t.Id = 0;
@@ -64,27 +65,24 @@ namespace LabMonitoring
             if (target.InReplyToStatusId != null)
             {
                 /* Receive a reply message */
-                if (Settings.GetTargetIdArray().Contains(target.InReplyToUserId.ToString()))
+                if (target.User.Id == target.InReplyToUserId)
                 {
-                    if (target.User.Id == target.InReplyToUserId)
+                    /* Self reply message */
+                    if (watchingList.ContainsKey((decimal)target.InReplyToStatusId))
                     {
-                        /* Self reply message */
                         Log("Receive a self reply message: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text + " to " + target.InReplyToStatusId);
                         Kamatte(target);
-                        if (watchingList.ContainsKey((decimal)target.InReplyToStatusId))
-                        {
-                            watchingList.Remove((decimal)target.InReplyToStatusId);
-                        }
+                        watchingList.Remove((decimal)target.InReplyToStatusId);
                     }
-                    else
+                }
+                else
+                {
+                    /* Other's tweet */
+                    /* A message sent from othe to target */
+                    if (watchingList.ContainsKey((decimal)target.InReplyToStatusId))
                     {
-                        /* Other's tweet */
-                        /* A message sent from othe to target */
                         Log("Receive a message sent from other to target: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text + " to " + target.InReplyToStatusId);
-                        if (watchingList.ContainsKey((decimal)target.InReplyToStatusId))
-                        {
-                            watchingList.Remove((decimal)target.InReplyToStatusId);
-                        }
+                        watchingList.Remove((decimal)target.InReplyToStatusId);
                     }
                 }
             }
@@ -116,6 +114,13 @@ namespace LabMonitoring
                     Log("Receive a target tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
                     watchingList.Add(target.Id, target);
                 }
+
+                /* Global target */
+                if (Regex.IsMatch(target.Text, Settings.GlobalFilter))
+                {
+                    Log("Receive a global filter tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
+                    watchingList.Add(target.Id, target);
+                }
             }
         }
 
@@ -127,7 +132,7 @@ namespace LabMonitoring
         {
             var now = DateTime.Now;
             List<decimal> removals = new List<decimal>();
-            foreach (var s in watchingList.Values)
+            foreach (var s in watchingList.Values.Reverse())
             {
                 TimeSpan ts = now - s.CreatedDate;
                 if (ts.TotalMinutes > Settings.WaitTime)

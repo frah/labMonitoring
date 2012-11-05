@@ -48,9 +48,10 @@ namespace LabMonitoring
             {
                 if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "ぬ[\n\r]?る[\n\r]?ぽ"))
                 {
+                    string[] text = { "ｶﾞｯ", "■━⊂(　・∀・) 彡 ｶﾞｯ☆`Д´)ﾉ", "ヽ( ・∀・)ﾉ┌┛ｶﾞｯΣ(ﾉ`Д´)ﾉ" };
                     var opt = new Twitterizer.StatusUpdateOptions();
                     opt.InReplyToStatusId = a.Id;
-                    t.StatusUpdate("@" + a.User.ScreenName + " ｶﾞｯ", opt);
+                    t.StatusUpdate("@" + a.User.ScreenName + " " + text[new Random().Next(text.Length)], opt);
                     b("ｶﾞｯ to @" + a.User.ScreenName);
                 }
             };
@@ -64,6 +65,7 @@ namespace LabMonitoring
 
             kamatte = new KamatteBot(output);
             t.NewPublicStatusEvent += kamatte.HandleStatus;
+            t.NewUserStatusEvent += kamatte.HandleStatus;
 
             try
             {

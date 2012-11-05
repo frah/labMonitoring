@@ -17,6 +17,10 @@ namespace LabMonitoring
         /// </summary>
         public int WaitTime { get; set; }
         /// <summary>
+        /// すべてのユーザを対象とするフィルタ
+        /// </summary>
+        public string GlobalFilter { get; set; }
+        /// <summary>
         /// BOTのターゲット
         /// </summary>
         public List<TargetUser> Targets { get; set; }
