@@ -91,7 +91,7 @@ namespace LabMonitoring
             else
             {
                 /* Recieve a nomal message */
-                if (Settings.GetTargetIdArray().Contains(target.User.Id.ToString()) && !target.Retweeted)
+                if (Settings.GetTargetIdArray().Contains(target.User.Id.ToString()) && target.RetweetedStatus == null)
                 {
                     /* Target's tweet */
                     var t = Settings.GetTargetUserFromId(target.User.Id);
