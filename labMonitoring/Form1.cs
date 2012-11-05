@@ -41,6 +41,9 @@ namespace LabMonitoring
 #endif
             FileVersionInfo ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
             this.Text = ver.ProductName + " " + ver.ProductVersion;
+#if DEBUG
+            this.Text = this.Text + " - DEBUG";
+#endif
 
             t = Twitter.GetInstance();
             t.LogOutput = output;

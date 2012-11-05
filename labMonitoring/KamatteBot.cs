@@ -27,6 +27,7 @@ namespace LabMonitoring
         private Dictionary<decimal, TwitterStatus> watchingList;
         private Timer kamatteCheckTimer;
         private Timer countClearTimer;
+        private object lockObj = new object();
 
         /// <summary>
         /// BOT初期化
@@ -91,9 +92,11 @@ namespace LabMonitoring
                 /* Global target */
                 if (Regex.IsMatch(target.Text, Settings.GlobalFilter))
                 {
-                    Log("Receive a global filter tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
-                    watchingList.Add(target.Id, target);
-                    return;
+                    if (AddStatusToWatchingList(target))
+                    {
+                        Log("Receive a global filter tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
+                        return;
+                    }
                 }
 
                 /* Recieve a nomal message */
@@ -119,9 +122,32 @@ namespace LabMonitoring
                     if (!Regex.IsMatch(target.Text, f, RegexOptions.IgnoreCase)) return;
                     if (Regex.IsMatch(target.Source, ">ikejun<")) return;
 
-                    Log("Receive a target tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
-                    watchingList.Add(target.Id, target);
+                    if (AddStatusToWatchingList(target))
+                    {
+                        Log("Receive a target tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
+                    }
                 }
+            }
+        }
+
+        private bool AddStatusToWatchingList(TwitterStatus status)
+        {
+            lock (lockObj)
+            {
+                try
+                {
+                    watchingList.Add(status.Id, status);
+                }
+                catch (ArgumentException ex)
+                {
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.WriteLine(ex);
+                    return false;
+                }
+                return true;
             }
         }
 
@@ -131,20 +157,23 @@ namespace LabMonitoring
         /// <param name="sender">イベントセンダ</param>
         private void KamatteCheckTask(object sender)
         {
-            var now = DateTime.Now;
-            List<decimal> removals = new List<decimal>();
-            foreach (var s in watchingList.Values.Reverse())
+            lock (lockObj)
             {
-                TimeSpan ts = now - s.CreatedDate;
-                if (ts.TotalMinutes > Settings.WaitTime)
+                var now = DateTime.Now;
+                List<decimal> removals = new List<decimal>();
+                foreach (var s in watchingList.Values.Reverse())
                 {
-                    Kamatte(s);
-                    removals.Add(s.Id);
+                    TimeSpan ts = now - s.CreatedDate;
+                    if (ts.TotalMinutes > Settings.WaitTime)
+                    {
+                        Kamatte(s);
+                        removals.Add(s.Id);
+                    }
                 }
-            }
-            foreach (var id in removals)
-            {
-                watchingList.Remove(id);
+                foreach (var id in removals)
+                {
+                    watchingList.Remove(id);
+                }
             }
         }
 
@@ -154,8 +183,11 @@ namespace LabMonitoring
         /// <param name="sender">イベントセンダ</param>
         private void CountClearTask(object sender)
         {
-            Log("Daily task start");
-            Settings.ClearDailyCount();
+            lock (lockObj)
+            {
+                Log("Daily task start");
+                Settings.ClearDailyCount();
+            }
         }
 
         /// <summary>
