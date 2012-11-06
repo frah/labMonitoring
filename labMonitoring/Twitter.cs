@@ -13,12 +13,12 @@ namespace LabMonitoring
     /// </summary>
     /// <param name="st">受信したstatus</param>
     /// <param name="log">ログ出力用デリゲート</param>
-    delegate void NewStatusHandler(TwitterStatus st, logOutput log);
+    public delegate void NewStatusHandler(TwitterStatus st, logOutput log);
 
     /// <summary>
     /// Twitter関連処理クラス
     /// </summary>
-    class Twitter : Logger
+    public class Twitter : Logger
     {
         private static Twitter instance = new Twitter();
         private OAuthTokens token;
@@ -29,7 +29,13 @@ namespace LabMonitoring
          * nullチェックの手間を省く
          * http://tec.jpn.ph/comp/delegateandevent.html
          */
+        /// <summary>
+        /// User Streamsの新着ツイートイベント
+        /// </summary>
         public event NewStatusHandler NewUserStatusEvent = delegate(TwitterStatus st, logOutput log) { };
+        /// <summary>
+        /// Public Streamsの新着ツイートイベント
+        /// </summary>
         public event NewStatusHandler NewPublicStatusEvent = delegate(TwitterStatus st, logOutput log) { };
 
         /// <summary>

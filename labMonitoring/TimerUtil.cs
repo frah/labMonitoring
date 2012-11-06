@@ -9,7 +9,7 @@ namespace LabMonitoring
     /// <summary>
     /// タイマーの簡易設定を目的としたラッパクラス
     /// </summary>
-    class TimerUtil
+    public class TimerUtil
     {
         private TimerUtil() { }
 

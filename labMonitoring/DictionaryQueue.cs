@@ -10,7 +10,7 @@ namespace LabMonitoring
     /// </summary>
     /// <typeparam name="TKey">ディクショナリ内のキーの型</typeparam>
     /// <typeparam name="TValue">ディクショナリ内の値の型</typeparam>
-    class DictionaryQueue<TKey, TValue> : Dictionary<TKey, TValue>
+    public class DictionaryQueue<TKey, TValue> : Dictionary<TKey, TValue>
     {
         private Queue<TKey> _queue;
         private readonly object lockObj = new object();
@@ -34,6 +34,11 @@ namespace LabMonitoring
             _queue = new Queue<TKey>(capacity);
         }
 
+        /// <summary>
+        /// 指定したキーと値をディクショナリに追加します。  
+        /// </summary>
+        /// <param name="key">追加する要素のキー。</param>
+        /// <param name="value">追加する要素の値。参照型の場合は、値を null 参照 (Visual Basic では Nothing) にできます。</param>
         new public void Add(TKey key, TValue value)
         {
             lock (lockObj)
@@ -43,6 +48,11 @@ namespace LabMonitoring
             }
         }
 
+        /// <summary>
+        /// 指定したキーを持つ値を <b>DictionaryQueue</b> から削除します。 
+        /// </summary>
+        /// <param name="key">削除する要素のキー。</param>
+        /// <returns>要素が見つかり、正常に削除された場合は <b>true</b>。それ以外の場合は <b>false</b>。このメソッドは、key が <b>DictionaryQueue</b> に見つからない場合、false を返します。</returns>
         new public bool Remove(TKey key)
         {
             lock (lockObj)
@@ -51,6 +61,9 @@ namespace LabMonitoring
             }
         }
 
+        /// <summary>
+        /// <b>DictionaryQueue</b> からすべてのキーと値を削除します。  
+        /// </summary>
         new public void Clear()
         {
             lock (lockObj)
@@ -64,6 +77,7 @@ namespace LabMonitoring
         /// <b>DictionaryQueue</b> の先頭にあるオブジェクトを削除せずに返します。 
         /// </summary>
         /// <returns><b>DictionaryQueue</b> の先頭にあるオブジェクト</returns>
+        /// <exception cref="System.InvalidOperationException"><b>DictionaryQueue</b> が空です。</exception>
         public TValue Peek()
         {
             lock (lockObj)
@@ -97,7 +111,8 @@ namespace LabMonitoring
         /// <summary>
         /// <b>DictionaryQueue</b> の先頭にあるオブジェクトを削除し、返します。
         /// </summary>
-        /// <returns>DictionaryQueue</b> の先頭にあるオブジェクト</returns>
+        /// <returns><b>DictionaryQueue</b> の先頭にあるオブジェクト</returns>
+        /// <exception cref="System.InvalidOperationException"><b>DictionaryQueue</b> が空です。</exception>
         public TValue Dequeue()
         {
             try

@@ -11,7 +11,7 @@ namespace LabMonitoring
     /// <summary>
     /// 誰かかまってやれよBOT
     /// </summary>
-    class KamatteBot : Logger, ITweetHandler
+    public class KamatteBot : Logger, ITweetHandler
     {
         /// <summary>
         /// ユーザ別設定など
@@ -60,6 +60,7 @@ namespace LabMonitoring
             countClearTimer = TimerUtil.DailyTimer(CountClearTask);
         }
 
+        /// <see cref="LabMonitoring.ITweetHandler"/>
         public void HandleStatus(TwitterStatus target, logOutput log)
         {
             if (target.User.Id.Equals(BotUserId)) return;
@@ -144,12 +145,12 @@ namespace LabMonitoring
             }
             catch (ArgumentException ex)
             {
-                System.Diagnostics.Trace.WriteLine("WatchingList key is duplicated: " + ex.Message);
+                DebugLog("WatchingList key is duplicated: " + ex.ParamName);
                 return false;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.WriteLine(ex);
+                DebugLog(ex.ToString());
                 return false;
             }
 

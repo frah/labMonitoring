@@ -10,13 +10,20 @@ namespace LabMonitoring
     /// <summary>
     /// カレンダのイベントチェックを行う日次タスク
     /// </summary>
-    class CheckCalendar : DailyTask
+    public class CheckCalendar : DailyTask
     {
         const string bottiPost = "【WARNING】 ぼっち飯警報発令！ 速やかに食事の準備を始めましょう";
+        /// <summary>
+        /// チェック対象のカレンダ
+        /// </summary>
         public readonly Dictionary<string, string> TargetCalendar;
         private List<Timer> calTimer;
         private Timer bottiTimer;
 
+        /// <summary>
+        /// ログ出力先を指定して <b>CheckCalendar</b> を初期化する
+        /// </summary>
+        /// <param name="output">ログ出力デリゲート</param>
         public CheckCalendar(logOutput output)
         {
             LogOutput = output;
@@ -38,6 +45,7 @@ namespace LabMonitoring
             Hour = 7;
         }
 
+        /// <see cref="LabMonitoring.DailyTask"/>
         public override void run(Object sender)
         {
             /* Clean list */

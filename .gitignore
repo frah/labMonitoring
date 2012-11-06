@@ -3,3 +3,4 @@
 /labMonitoring/Properties/Settings.*
 /labMonitoring/app.config
 /run.bat
+*.log

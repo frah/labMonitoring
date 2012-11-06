@@ -3,7 +3,10 @@ using Twitterizer;
 
 namespace LabMonitoring
 {
-    interface ITweetHandler
+    /// <summary>
+    /// TwitterStreamのイベントハンドラクラスが継承するインターフェース
+    /// </summary>
+    public interface ITweetHandler
     {
         /// <summary>
         /// Streamから受け取ったstatusを処理する

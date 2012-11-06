@@ -10,7 +10,7 @@ namespace LabMonitoring
     /// <summary>
     /// カメラ制御用クラス
     /// </summary>
-    class Camera : Logger, ITweetHandler
+    public class Camera : Logger, ITweetHandler
     {
         /// <summary>
         /// 画像幅サイズ
@@ -98,6 +98,7 @@ namespace LabMonitoring
             Cv.ReleaseCapture(cap);
         }
 
+        /// <see cref="LabMonitoring.ITweetHandler"/>
         public void HandleStatus(TwitterStatus target, logOutput log)
         {
             if (!target.Text.StartsWith("@frahabot")) return;

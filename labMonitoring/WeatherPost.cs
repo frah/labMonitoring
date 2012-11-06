@@ -12,17 +12,22 @@ namespace LabMonitoring
     /// <summary>
     /// 天気情報を取得する日次タスク
     /// </summary>
-    class WeatherPost : DailyTask
+    public class WeatherPost : DailyTask
     {
         const string WeatherXML = "http://www.drk7.jp/weather/xml/29.xml";
         const string ClothDriedURL = "http://weather.yahoo.co.jp/weather/jp/expo/clothdried/29/6410.html";
 
+        /// <summary>
+        /// ログ出力先を指定して <b>WeatherPost</b> のインスタンスを初期化する
+        /// </summary>
+        /// <param name="output">ログ出力デリゲート</param>
         public WeatherPost(logOutput output = null)
         {
             LogOutput = output;
             Hour = 7;
         }
 
+        /// <see cref="LabMonitoring.DailyTask"/>
         public override void run(object sender)
         {
             string weather = "";

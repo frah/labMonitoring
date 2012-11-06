@@ -50,9 +50,7 @@ namespace LabMonitoring
         /// <param name="str">出力する文字列</param>
         protected void DebugLog(string str)
         {
-            Trace.Indent();
-            Trace.WriteLine(str);
-            Trace.Unindent();
+            Trace.WriteLine("[" + DateTime.Now.ToString() + "] " + this.GetType().FullName + "\r\n" + str);
         }
     }
 }
