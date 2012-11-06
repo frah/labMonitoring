@@ -27,7 +27,7 @@ namespace LabMonitoring
         private Dictionary<decimal, TwitterStatus> watchingList;
         private Timer kamatteCheckTimer;
         private Timer countClearTimer;
-        private object lockObj = new object();
+        private readonly object lockObj = new object();
 
         /// <summary>
         /// BOT初期化
@@ -63,6 +63,8 @@ namespace LabMonitoring
 
         public void HandleStatus(TwitterStatus target, logOutput log)
         {
+            if (target.User.Id.Equals(BotUserId)) return;
+
             if (target.InReplyToStatusId != null)
             {
                 /* Receive a reply message */
@@ -95,8 +97,8 @@ namespace LabMonitoring
                     if (AddStatusToWatchingList(target))
                     {
                         Log("Receive a global filter tweet: [" + target.Id + "] @" + target.User.ScreenName + " " + target.Text);
-                        return;
                     }
+                    return;
                 }
 
                 /* Recieve a nomal message */
@@ -130,6 +132,11 @@ namespace LabMonitoring
             }
         }
 
+        /// <summary>
+        /// watchingListへのスレッドセーフな値の追加
+        /// </summary>
+        /// <param name="status">追加するTwitterStatus</param>
+        /// <returns>追加が成功したかどうか</returns>
         private bool AddStatusToWatchingList(TwitterStatus status)
         {
             lock (lockObj)
@@ -140,7 +147,8 @@ namespace LabMonitoring
                 }
                 catch (ArgumentException ex)
                 {
-                    return true;
+                    System.Diagnostics.Trace.WriteLine("WatchingList key is duplicated: " + ex.Message);
+                    return false;
                 }
                 catch (Exception ex)
                 {
