@@ -206,6 +206,15 @@ namespace LabMonitoring
         {
             var t = Settings.IncrementKamatteCount(s.User.Id);
             var sb = new StringBuilder("誰かかまってやれよ！ ");
+            if (t == null)
+            {
+                t = new TargetUser();
+                t.Id = s.User.Id;
+                t.Name = s.User.ScreenName;
+                t.DailyKamatteCount = 1;
+                t.TotalKamatteCount = 1;
+                Settings.Targets.Add(t);
+            }
             if (t != null)
             {
                 sb.Append("(本日").Append(t.DailyKamatteCount).Append("回目, 累計").Append(t.TotalKamatteCount).Append("回) ");

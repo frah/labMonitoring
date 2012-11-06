@@ -97,6 +97,10 @@ namespace LabMonitoring
             }
         }
 
+        /// <summary>
+        /// このクラスの文字列表記を返す
+        /// </summary>
+        /// <returns>このクラスの文字列表記</returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -110,14 +114,36 @@ namespace LabMonitoring
         }
     }
 
+    /// <summary>
+    /// ターゲットユーザクラス
+    /// </summary>
     public class TargetUser
     {
-        public long Id { get; set; }
+        /// <summary>
+        /// ターゲットのTwitterID
+        /// </summary>
+        public decimal Id { get; set; }
+        /// <summary>
+        /// ターゲットのTwitterScreenName
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// ターゲットの合計反応数
+        /// </summary>
         public int TotalKamatteCount { get; set; }
+        /// <summary>
+        /// ターゲットの今日の反応数
+        /// </summary>
         public int DailyKamatteCount { get; set; }
+        /// <summary>
+        /// 反応文字列フィルタ
+        /// </summary>
         public string Filter { get; set; }
 
+        /// <summary>
+        /// このクラスの文字列表記を返す
+        /// </summary>
+        /// <returns>このクラスの文字列表記</returns>
         public override string ToString()
         {
             return Name + " (" + Id + "): " + DailyKamatteCount + "/" + TotalKamatteCount + "[" + Filter + "]";
