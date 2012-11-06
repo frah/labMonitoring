@@ -121,6 +121,7 @@
     <Compile Include="Camera.cs" />
     <Compile Include="CheckCalendar.cs" />
     <Compile Include="DailyTask.cs" />
+    <Compile Include="HttpServer.cs" />
     <Compile Include="ITweetHandler.cs" />
     <Compile Include="KamatteBot.cs" />
     <Compile Include="KamatteSettings.cs" />
@@ -208,6 +209,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

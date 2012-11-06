@@ -11,24 +11,42 @@ using LabMonitoring;
 
 namespace LabMonitoring
 {
-    delegate void logOutput(string str);
+    /// <summary>
+    /// ログ出力用デリゲート
+    /// </summary>
+    /// <param name="str">出力ログ</param>
+    public delegate void logOutput(string str);
+    /// <summary>
+    /// 現在のログ出力を返す
+    /// </summary>
+    /// <returns>現在のログ</returns>
+    public delegate string currentLog();
 
+    /// <summary>
+    /// メインウィンドウ
+    /// </summary>
     public partial class Form1 : Form
     {
         private Twitter t;
         private Camera c;
         private KamatteBot kamatte;
         private logOutput output;
+        private currentLog curLog;
         private List<DailyTask> DailyTasks = new List<DailyTask>();
+        private HttpServer http;
 
         private int WM_SYSCOMMAND = 0x112;
         private IntPtr SC_MINIMIZE = (IntPtr)0xF020;
         private Random rand = new Random();
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
             output = new logOutput(_output);
+            curLog = new currentLog(_curLog);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -90,8 +108,15 @@ namespace LabMonitoring
             {
                 d.start();
             }
+
+            http = new HttpServer() { LogOutput = output, CurLog = curLog };
+            http.Start();
         }
 
+        /// <summary>
+        /// Windowsメッセージを処理する
+        /// </summary>
+        /// <param name="m">Windowsメッセージ</param>
         protected override void WndProc(ref Message m)
         {
             /* 
@@ -132,6 +157,10 @@ namespace LabMonitoring
             this.Activate();
         }
 
+        /// <summary>
+        /// テキストボックスとTraceログに与えられた文字列を出力する
+        /// </summary>
+        /// <param name="text">出力する文字列</param>
         public void _output(string text)
         {
             if (this.InvokeRequired)
@@ -150,7 +179,21 @@ namespace LabMonitoring
             logTextBox.SelectionStart = logTextBox.Text.Length;
             logTextBox.Focus();
             logTextBox.ScrollToCaret();
-            Trace.WriteLine(logText);
+            Trace.Write(logText);
+        }
+
+        /// <summary>
+        /// 現在のテキストボックスの内容を返す
+        /// </summary>
+        /// <returns>テキストボックスの内容</returns>
+        public string _curLog()
+        {
+            if (this.InvokeRequired)
+            {
+                return Invoke(curLog) as string;
+            }
+
+            return logTextBox.Text;
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -163,6 +206,7 @@ namespace LabMonitoring
                 {
                     d.stop();
                 }
+                http.Stop();
                 notifyIcon.Dispose();
                 Application.Exit();
             }
