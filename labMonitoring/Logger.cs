@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -41,6 +42,17 @@ namespace LabMonitoring
         protected void Assert(bool test, string str)
         {
             if (test) Log(str);
+        }
+
+        /// <summary>
+        /// ファイルのみにログを出力する
+        /// </summary>
+        /// <param name="str">出力する文字列</param>
+        protected void DebugLog(string str)
+        {
+            Trace.Indent();
+            Trace.WriteLine(str);
+            Trace.Unindent();
         }
     }
 }

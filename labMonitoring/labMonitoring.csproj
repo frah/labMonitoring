@@ -80,6 +80,7 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <DocumentationFile>bin\x64\Release\labMonitoring.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>LabMonitoring.Program</StartupObject>
@@ -121,6 +122,7 @@
     <Compile Include="Camera.cs" />
     <Compile Include="CheckCalendar.cs" />
     <Compile Include="DailyTask.cs" />
+    <Compile Include="DictionaryQueue.cs" />
     <Compile Include="HttpServer.cs" />
     <Compile Include="ITweetHandler.cs" />
     <Compile Include="KamatteBot.cs" />

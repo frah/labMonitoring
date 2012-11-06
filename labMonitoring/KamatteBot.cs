@@ -24,7 +24,7 @@ namespace LabMonitoring
         /// <summary>
         /// 現在監視中のstatus一覧
         /// </summary>
-        private Dictionary<decimal, TwitterStatus> watchingList;
+        private DictionaryQueue<decimal, TwitterStatus> watchingList;
         private Timer kamatteCheckTimer;
         private Timer countClearTimer;
         private readonly object lockObj = new object();
@@ -54,10 +54,9 @@ namespace LabMonitoring
             }
             Log(Settings.ToString());
 
-            watchingList = new Dictionary<decimal, TwitterStatus>();
+            watchingList = new DictionaryQueue<decimal, TwitterStatus>();
 
             /* Set timer */
-            kamatteCheckTimer = new Timer(KamatteCheckTask, null, 60000, 60000);
             countClearTimer = TimerUtil.DailyTimer(CountClearTask);
         }
 
@@ -139,24 +138,28 @@ namespace LabMonitoring
         /// <returns>追加が成功したかどうか</returns>
         private bool AddStatusToWatchingList(TwitterStatus status)
         {
-            lock (lockObj)
+            try
             {
-                try
-                {
-                    watchingList.Add(status.Id, status);
-                }
-                catch (ArgumentException ex)
-                {
-                    System.Diagnostics.Trace.WriteLine("WatchingList key is duplicated: " + ex.Message);
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Trace.WriteLine(ex);
-                    return false;
-                }
-                return true;
+                watchingList.Add(status.Id, status);
             }
+            catch (ArgumentException ex)
+            {
+                System.Diagnostics.Trace.WriteLine("WatchingList key is duplicated: " + ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine(ex);
+                return false;
+            }
+
+            if (kamatteCheckTimer == null)
+            {
+                kamatteCheckTimer = new Timer(KamatteCheckTask, null, Settings.WaitTime * 60 * 1000, Timeout.Infinite);
+                DebugLog("KamatteCheckTimer is set after " + Settings.WaitTime + " minutes.");
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -165,23 +168,37 @@ namespace LabMonitoring
         /// <param name="sender">イベントセンダ</param>
         private void KamatteCheckTask(object sender)
         {
-            lock (lockObj)
+            DebugLog("KamatteCheckTask is started.");
+            var now = DateTime.Now;
+            TwitterStatus st = null;
+
+            try
             {
-                var now = DateTime.Now;
-                List<decimal> removals = new List<decimal>();
-                foreach (var s in watchingList.Values.Reverse())
+                st = watchingList.Peek();
+                TimeSpan ts = now - st.CreatedDate;
+                while (ts.TotalSeconds > Settings.WaitTime * 60 - 5)
                 {
-                    TimeSpan ts = now - s.CreatedDate;
-                    if (ts.TotalMinutes > Settings.WaitTime)
-                    {
-                        Kamatte(s);
-                        removals.Add(s.Id);
-                    }
+                    Kamatte(watchingList.Dequeue());
+                    st = watchingList.Peek();
+                    ts = now - st.CreatedDate;
                 }
-                foreach (var id in removals)
+            }
+            catch (Exception ex)
+            {
+                if (!(ex is InvalidOperationException))
                 {
-                    watchingList.Remove(id);
+                    Log(ex.ToString());
                 }
+            }
+
+            kamatteCheckTimer.Dispose();
+            kamatteCheckTimer = null;
+
+            if (st != null && watchingList.Count > 0)
+            {
+                DateTime dt = st.CreatedDate.AddMinutes(Settings.WaitTime);
+                kamatteCheckTimer = TimerUtil.OnceTimer(KamatteCheckTask, dt);
+                DebugLog("KamatteCheckTimer is set at " + dt.ToShortTimeString() + ".");
             }
         }
 
