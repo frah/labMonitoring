@@ -5,8 +5,14 @@ using System.Text;
 
 namespace LabMonitoring
 {
-    abstract class Logger
+    /// <summary>
+    /// LabMonitoringのログ出力用抽象クラス
+    /// </summary>
+    public abstract class Logger
     {
+        /// <summary>
+        /// ログ出力用デリゲートプロパティ
+        /// </summary>
         public logOutput LogOutput { get; set; }
 
         /// <summary>

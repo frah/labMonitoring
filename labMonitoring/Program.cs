@@ -19,17 +19,25 @@ namespace LabMonitoring
             FileVersionInfo ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
             Trace.WriteLine(string.Format(">>> {0} {1} <<<", ver.ProductName, ver.ProductVersion));
 
+            /* Set error handler for unhandled exception */
+            Application.ThreadException += (x, y) => { 
+                Trace.WriteLine(y.Exception.Message + " at " + y.Exception.Source);
+                Trace.WriteLine(y.Exception.StackTrace);
+            };
+            AppDomain.CurrentDomain.UnhandledException += (x, y) =>
+            {
+                Exception ex = y.ExceptionObject as Exception;
+                if (ex != null)
+                {
+                    Trace.WriteLine(ex.Message + " at " + ex.Source);
+                    Trace.WriteLine(ex.StackTrace);
+                }
+                Trace.WriteLine("UnhandledException is occured at " + x.ToString());
+            };
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            try
-            {
-                Application.Run(new Form1());
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex.Message + "at" + ex.Source);
-                Trace.WriteLine(ex.StackTrace);
-            }
+            Application.Run(new Form1());
         }
     }
 }
