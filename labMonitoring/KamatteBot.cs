@@ -63,8 +63,6 @@ namespace LabMonitoring
         /// <see cref="LabMonitoring.ITweetHandler"/>
         public void HandleStatus(TwitterStatus target, logOutput log)
         {
-            if (target.User.Id.Equals(BotUserId)) return;
-
             if (target.InReplyToStatusId != null)
             {
                 /* Receive a reply message */

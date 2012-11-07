@@ -20,6 +20,7 @@ namespace LabMonitoring
     /// </summary>
     public class Twitter : Logger
     {
+        const decimal BotUserId = 732414260;
         private static Twitter instance = new Twitter();
         private OAuthTokens token;
         private TwitterStream ustream;
@@ -128,6 +129,7 @@ namespace LabMonitoring
         /// <param name="target">受信したStatus</param>
         private void onStatus(TwitterStatus target)
         {
+            if (target.User.Id.Equals(BotUserId)) return;
             NewUserStatusEvent(target, LogOutput);
         }
 
@@ -137,6 +139,7 @@ namespace LabMonitoring
         /// <param name="target">受信したStatus</param>
         private void onPStatus(TwitterStatus target)
         {
+            if (target.User.Id.Equals(BotUserId)) return;
             NewPublicStatusEvent(target, LogOutput);
         }
 
