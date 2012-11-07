@@ -49,5 +49,10 @@ namespace LabMonitoring
 
             this.Dispose();
         }
+
+        private void OAuthForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.Abort;
+        }
     }
 }

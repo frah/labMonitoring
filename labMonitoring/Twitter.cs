@@ -55,7 +55,11 @@ namespace LabMonitoring
                 )
             {
                 OAuthForm f = new OAuthForm();
-                f.ShowDialog();
+                if (f.ShowDialog() == System.Windows.Forms.DialogResult.Abort)
+                {
+                    System.Windows.Forms.Application.Exit();
+                    Environment.Exit(0);
+                }
                 Properties.Settings.Default.Reload();
             }
 

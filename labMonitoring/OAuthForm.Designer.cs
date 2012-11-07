@@ -139,6 +139,7 @@
             this.MinimizeBox = false;
             this.Name = "OAuthForm";
             this.Text = "OAuthForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OAuthForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
