@@ -90,7 +90,8 @@ namespace LabMonitoring
                         else
                         {
                             sbb.Append(rc.Start.Local.ToShortTimeString()).Append(" - ").Append(rc.End.Local.ToShortTimeString());
-                            postTime = rc.Start.Local.AddMinutes(-15);
+                            postTime = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 
+                                rc.Start.Local.Hour, rc.Start.Local.Minute - 15, rc.Start.Local.Second);
                         }
                         sbb.Append(")");
                         calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(sbb.ToString()); }, postTime));

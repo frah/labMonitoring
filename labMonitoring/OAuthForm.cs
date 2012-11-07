@@ -10,10 +10,16 @@ using Twitterizer;
 
 namespace LabMonitoring
 {
+    /// <summary>
+    /// OAuth認証用フォーム
+    /// </summary>
     public partial class OAuthForm : Form
     {
         private OAuthTokenResponse res;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public OAuthForm()
         {
             InitializeComponent();
