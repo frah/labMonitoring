@@ -47,6 +47,18 @@ namespace LabMonitoring
         {
             LogOutput = output;
 
+            if (
+                string.IsNullOrWhiteSpace(Properties.Settings.Default.consumerKey) ||
+                string.IsNullOrWhiteSpace(Properties.Settings.Default.consumerSecret) ||
+                string.IsNullOrWhiteSpace(Properties.Settings.Default.accessToken) ||
+                string.IsNullOrWhiteSpace(Properties.Settings.Default.accessTokenSecret)
+                )
+            {
+                OAuthForm f = new OAuthForm();
+                f.ShowDialog();
+                Properties.Settings.Default.Reload();
+            }
+
             token = new OAuthTokens
             {
                 ConsumerKey = Properties.Settings.Default.consumerKey,
@@ -59,9 +71,12 @@ namespace LabMonitoring
 
             var k = Properties.Settings.Default.Kamatte;
             var opt = new StreamOptions();
-            opt.Follow = k.GetTargetIdArray();
-            opt.Track = k.GetTargetNameArray();
-            pstream = new TwitterStream(token, "labMonitorPublic", opt);
+            if (k != null)
+            {
+                opt.Follow = k.GetTargetIdArray();
+                opt.Track = k.GetTargetNameArray();
+                pstream = new TwitterStream(token, "labMonitorPublic", opt);
+            }
         }
 
         /// <summary>
@@ -79,7 +94,7 @@ namespace LabMonitoring
         public void start()
         {
             StartUserStream();
-            StartPublicStream();
+            if (pstream != null) StartPublicStream();
             Log("Start Twitter UserStream listening");
         }
 
@@ -120,7 +135,7 @@ namespace LabMonitoring
         public void end()
         {
             ustream.EndStream();
-            pstream.EndStream();
+            if (pstream != null) pstream.EndStream();
         }
 
         /// <summary>
