@@ -86,7 +86,7 @@ namespace LabMonitoring
                         DateTime postTime;
                         if (rc.IsAllDay)
                         {
-                            if (!rc.Start.AddDays(1).Equals(DateTime.Today)) continue;
+                            if (!rc.Start.Local.AddDays(1).Equals(DateTime.Today)) continue;
                             /* All day event */
                             sbb.Append("終日");
                             postTime = DateTime.Now.AddMinutes(3);

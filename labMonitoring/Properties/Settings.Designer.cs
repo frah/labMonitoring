@@ -81,5 +81,53 @@ namespace LabMonitoring.Properties {
                 this["Kamatte"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("example.com")]
+        public string IrcServer {
+            get {
+                return ((string)(this["IrcServer"]));
+            }
+            set {
+                this["IrcServer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#test")]
+        public string IrcChannel {
+            get {
+                return ((string)(this["IrcChannel"]));
+            }
+            set {
+                this["IrcChannel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string IrcPassword {
+            get {
+                return ((string)(this["IrcPassword"]));
+            }
+            set {
+                this["IrcPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string IrcAdminNick {
+            get {
+                return ((string)(this["IrcAdminNick"]));
+            }
+            set {
+                this["IrcAdminNick"] = value;
+            }
+        }
     }
 }

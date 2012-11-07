@@ -17,5 +17,17 @@
     <Setting Name="Kamatte" Type="LabMonitoring.KamatteSettings" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="IrcServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">example.com</Value>
+    </Setting>
+    <Setting Name="IrcChannel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#test</Value>
+    </Setting>
+    <Setting Name="IrcPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="IrcAdminNick" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

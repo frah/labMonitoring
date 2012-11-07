@@ -34,6 +34,7 @@ namespace LabMonitoring
         private currentLog curLog;
         private List<DailyTask> DailyTasks = new List<DailyTask>();
         private HttpServer http;
+        private IrcController irc;
 
         private int WM_SYSCOMMAND = 0x112;
         private IntPtr SC_MINIMIZE = (IntPtr)0xF020;
@@ -110,6 +111,15 @@ namespace LabMonitoring
 
             http = new HttpServer() { LogOutput = output, CurLog = curLog };
             http.Start();
+            try
+            {
+                irc = new IrcController() { LogOutput = output, CurLog = curLog };
+                irc.Start();
+            }
+            catch (ArgumentNullException)
+            {
+                output("IRC controller init failed.");
+            }
         }
 
         /// <summary>
@@ -206,6 +216,7 @@ namespace LabMonitoring
                     d.stop();
                 }
                 http.Stop();
+                if (irc != null) irc.Stop();
                 notifyIcon.Dispose();
                 Application.Exit();
             }

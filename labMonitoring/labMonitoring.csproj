@@ -99,6 +99,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\OpenCvSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Sharkbite.Thresher, Version=1.2.0.0, Culture=neutral, PublicKeyToken=e9ceddb3468b088a">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Sharkbite.Thresher.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -124,6 +128,7 @@
     <Compile Include="DailyTask.cs" />
     <Compile Include="DictionaryQueue.cs" />
     <Compile Include="HttpServer.cs" />
+    <Compile Include="IrcController.cs" />
     <Compile Include="ITweetHandler.cs" />
     <Compile Include="KamatteBot.cs" />
     <Compile Include="KamatteSettings.cs" />
@@ -176,6 +181,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="opencv_highgui231.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sharkbite.Thresher.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Twitterizer2.license.txt" />
