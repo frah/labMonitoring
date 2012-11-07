@@ -229,6 +229,7 @@ namespace LabMonitoring
                 t.Name = s.User.ScreenName;
                 t.DailyKamatteCount = 1;
                 t.TotalKamatteCount = 1;
+                t.Filter = "(?!)";
                 Settings.Targets.Add(t);
             }
             if (t != null)
