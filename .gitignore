@@ -1,6 +1,4 @@
 /labMonitoring/bin/
 /labMonitoring/obj/
-/labMonitoring/Properties/Settings.*
-/labMonitoring/app.config
 /run.bat
 *.log
