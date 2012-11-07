@@ -40,6 +40,10 @@ namespace LabMonitoring
                 // ubi-event
                 "https://www.google.com/calendar/ical/ubi-license%40is.naist.jp/private-b105373c049e97ad17f71606354d047b/basic.ics",
                 "研究室内イベント");
+            TargetCalendar.Add(
+                // ito-lab meeting
+                "https://www.google.com/calendar/ical/ito-license%40is.naist.jp/private-d465374335b22e44df3c0a58e9aa4d4c/basic.ics",
+                "伊藤研ミーティング");
 
             calTimer = new List<System.Threading.Timer>();
             Hour = 7;
@@ -90,8 +94,9 @@ namespace LabMonitoring
                         else
                         {
                             sbb.Append(rc.Start.Local.ToShortTimeString()).Append(" - ").Append(rc.End.Local.ToShortTimeString());
+                            DateTime start = rc.Start.Local.AddMinutes(-15);
                             postTime = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 
-                                rc.Start.Local.Hour, rc.Start.Local.Minute - 15, rc.Start.Local.Second);
+                                start.Hour, start.Minute - 15, start.Second);
                         }
                         sbb.Append(")");
                         calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(sbb.ToString()); }, postTime));
