@@ -155,7 +155,12 @@ namespace LabMonitoring
             System.Console.WriteLine("[DEBUG] Update status: " + text);
             return new TwitterResponse<TwitterStatus>() { Result = RequestResult.Success };
 #else
-            return TwitterStatus.Update(token, text, opt);
+            var ret = TwitterStatus.Update(token, text, opt);
+            if (!ret.Result.Equals(RequestResult.Success))
+            {
+                DebugLog(string.Format("Twitter update failed: [{0}] {1}", ret.Result, ret.ErrorMessage));
+            }
+            return ret;
 #endif
         }
 
@@ -172,7 +177,12 @@ namespace LabMonitoring
             System.Console.WriteLine("[DEBUG] Update status with media: " + text);
             return new TwitterResponse<TwitterStatus>() { Result = RequestResult.Success };
 #else
-            return TwitterStatus.UpdateWithMedia(token, text, b, opt);
+            var ret = TwitterStatus.UpdateWithMedia(token, text, b, opt);
+            if (!ret.Result.Equals(RequestResult.Success))
+            {
+                DebugLog(string.Format("Twitter update failed: [{0}] {1}", ret.Result, ret.ErrorMessage));
+            }
+            return ret;
 #endif
         }
     }
