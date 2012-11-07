@@ -80,7 +80,7 @@ namespace LabMonitoring
             };
             t.NewUserStatusEvent += (a, b) =>
             {
-                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "((眠|ねむ)い|ねむねむ|[寝ね]てない)"))
+                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "((眠|ねむ)い|ねむねむ|[寝ね]てない|寝不足)"))
                 {
                     string[] kao = { "", "(☝ ՞ਊ ՞)☝", "(´◉◞౪◟◉)", "(´☣益☣)" };
                     Twitter.GetInstance().StatusUpdate("@" + a.User.ScreenName + " " + kao[rand.Next(kao.Length)] + " 寝ろ #nero", new Twitterizer.StatusUpdateOptions() { InReplyToStatusId = a.Id });
@@ -210,6 +210,17 @@ namespace LabMonitoring
                 notifyIcon.Dispose();
                 Application.Exit();
             }
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Kamatte = kamatte.Settings;
+            Properties.Settings.Default.Save();
+        }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            kamatte.ReloadSetting();
         }
     }
 }

@@ -23,5 +23,14 @@
         private void SettingsSavingEventHandler(object sender, System.ComponentModel.CancelEventArgs e) {
             // SettingsSaving イベントを処理するコードをここに追加してください。
         }
+
+        [System.Configuration.UserScopedSettingAttribute()]
+        [System.Configuration.SettingsDescription("前のバージョンから設定ファイルのアップグレードを行ったかを保持する。")]
+        [System.Configuration.DefaultSettingValue("false")]
+        public System.Boolean IsUpgrated
+        {
+            get { return (System.Boolean)this["IsUpgrated"]; }
+            set { this["IsUpgrated"] = value; }
+        }
     }
 }

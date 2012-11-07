@@ -35,6 +35,13 @@ namespace LabMonitoring
                 Trace.WriteLine("UnhandledException is occured at " + x.ToString());
             };
 
+            /* Upgrade settings */
+            if (!Properties.Settings.Default.IsUpgrated)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.IsUpgrated = true;
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

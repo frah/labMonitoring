@@ -16,7 +16,7 @@ namespace LabMonitoring
         /// <summary>
         /// ユーザ別設定など
         /// </summary>
-        public readonly KamatteSettings Settings;
+        public KamatteSettings Settings { get; private set; }
         /// <summary>
         /// BOTのTwitterアカウント(@frahabot)のユーザID
         /// </summary>
@@ -258,6 +258,17 @@ namespace LabMonitoring
         {
             Properties.Settings.Default.Kamatte = Settings;
             Properties.Settings.Default.Save();
+        }
+
+        /// <summary>
+        /// 設定ファイルをリロードする
+        /// </summary>
+        public void ReloadSetting()
+        {
+            Log("Settings reloading...");
+            Properties.Settings.Default.Reload();
+            Settings = Properties.Settings.Default.Kamatte;
+            Log(Settings.ToString());
         }
     }
 }
