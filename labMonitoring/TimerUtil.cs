@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,7 +10,7 @@ namespace LabMonitoring
     /// <summary>
     /// タイマーの簡易設定を目的としたラッパクラス
     /// </summary>
-    public class TimerUtil
+    public class TimerUtil : Logger
     {
         private TimerUtil() { }
 
@@ -23,6 +24,8 @@ namespace LabMonitoring
         public static Timer TimerWithStartTime(TimerCallback callback, DateTime startTime, TimeSpan period)
         {
             TimeSpan ts = startTime - DateTime.Now;
+            Trace.WriteLine("[" + DateTime.Now.ToString() + "] LabMonitoring.TimerUtil#TimerWithStartTime\r\n" 
+                + "New timer is set at " + startTime.ToString() + " every " + period.Minutes + " minutes.");
             return new Timer(callback, null, ts, period);
         }
 
@@ -55,6 +58,8 @@ namespace LabMonitoring
         public static Timer OnceTimer(TimerCallback callback, DateTime startTime)
         {
             TimeSpan ts = startTime - DateTime.Now;
+            Trace.WriteLine("[" + DateTime.Now.ToString() + "] LabMonitoring.TimerUtil#OnceTimer\r\n"
+                + "New timer is set at " + startTime.ToString() + " at once.");
             return OnceTimer(callback, (int)ts.TotalMilliseconds);
         }
 
@@ -67,6 +72,8 @@ namespace LabMonitoring
         public static Timer OnceTimer(TimerCallback callback, int dueTime)
         {
             if (dueTime < 0) return null;
+            Trace.WriteLine("[" + DateTime.Now.ToString() + "] LabMonitoring.TimerUtil#OnceTimer\r\n" 
+                + "New timer is set after " + dueTime + " ms at once.");
             return new Timer(callback, null, dueTime, Timeout.Infinite);
         }
     }

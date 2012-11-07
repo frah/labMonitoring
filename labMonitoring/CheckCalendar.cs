@@ -43,6 +43,7 @@ namespace LabMonitoring
 
             calTimer = new List<System.Threading.Timer>();
             Hour = 7;
+            run(new object());
         }
 
         /// <see cref="LabMonitoring.DailyTask"/>
@@ -50,7 +51,7 @@ namespace LabMonitoring
         {
             /* Clean list */
             foreach (Timer t in calTimer) {
-                t.Dispose();
+                if (t != null) t.Dispose();
             }
             if (bottiTimer != null) bottiTimer.Dispose();
             calTimer.Clear();
@@ -123,8 +124,11 @@ namespace LabMonitoring
                 post = "[今日の予定] 今日は予定はありません．";
             }
 
-            Log("CalendarTweet: " + post);
-            Twitter.GetInstance().StatusUpdate(post);
+            if (sender == null)
+            {
+                Log("CalendarTweet: " + post);
+                Twitter.GetInstance().StatusUpdate(post);
+            }
 
             if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday || DateTime.Today.DayOfWeek == DayOfWeek.Sunday) bottiFlag = false;
 

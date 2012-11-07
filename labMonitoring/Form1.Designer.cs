@@ -51,10 +51,10 @@
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.toolStripSeparator1,
             this.toolStripMenuItem2,
-            this.toolStripMenuItem3});
+            this.toolStripMenuItem3,
+            this.toolStripSeparator1,
+            this.toolStripMenuItem1});
             this.contextMenuStrip.Name = "contextMenuStrip";
             this.contextMenuStrip.Size = new System.Drawing.Size(153, 98);
             // 

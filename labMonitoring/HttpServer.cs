@@ -27,10 +27,19 @@ namespace LabMonitoring
             Log("HttpServer starting...: http://localhost:9999/");
             lock (this.lockObj)
             {
-                this.listener = new HttpListener();
-                this.listener.Prefixes.Add("http://*:9999/");
-                this.listener.Start();
-                this.listener.BeginGetContext(this.OnRequested, this.listener);
+                try
+                {
+                    this.listener = new HttpListener();
+                    this.listener.Prefixes.Add("http://*:9999/");
+                    this.listener.Start();
+                    this.listener.BeginGetContext(this.OnRequested, this.listener);
+                }
+                catch (HttpListenerException ex)
+                {
+                    Log("Http server start failed: " + ex.ErrorCode);
+                    DebugLog(ex.StackTrace);
+                    return;
+                }
             }
             Log("HttpServer OK");
         }
