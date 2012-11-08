@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using LabMonitoring;
 
@@ -63,6 +64,14 @@ namespace LabMonitoring
             this.Text = this.Text + " - DEBUG";
 #endif
 
+            new Thread(InitThread).Start();
+        }
+
+        /// <summary>
+        /// 初期化処理用スレッド
+        /// </summary>
+        private void InitThread()
+        {
             t = Twitter.GetInstance();
             t.LogOutput = output;
             c = new Camera(output);
