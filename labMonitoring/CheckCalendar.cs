@@ -100,6 +100,13 @@ namespace LabMonitoring
                         }
                         sbb.Append(")");
                         calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(sbb.ToString()); }, postTime));
+                        if (!rc.IsAllDay)
+                        {
+                            calTimer.Add(
+                                TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(sbb.ToString().Replace("次の予定", "リマインダ")); },
+                                postTime.AddMinutes(-15))
+                            );
+                        }
 
                         /* ボッチ飯警報 */
                         if (bottiFlag && rc.Summary.Contains("江藤"))
