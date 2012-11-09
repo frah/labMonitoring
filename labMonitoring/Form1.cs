@@ -228,6 +228,7 @@ namespace LabMonitoring
                 if (irc != null) irc.Stop();
                 notifyIcon.Dispose();
                 Application.Exit();
+                Environment.Exit(0);
             }
         }
 
