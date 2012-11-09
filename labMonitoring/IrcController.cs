@@ -21,8 +21,9 @@ namespace LabMonitoring
         private string channel;
         private string password;
         private string adminNick;
+        private int retryCount = 0;
 
-        const string nick = "LabMonitoringBot";
+        const string nick = "LabBot";
         const string helpMes = "log: show current log\r\nconf: show current settings\r\nhelp,?: show this message";
 
         /// <summary>
@@ -61,6 +62,8 @@ namespace LabMonitoring
             if (last)
             {
                 Log("Complete to join channel '" + channel + "'.");
+                conn.Sender.ChangeChannelMode(channel, ModeAction.Add, ChannelMode.Password, password);
+                conn.Sender.ChangeChannelMode(channel, ModeAction.Add, ChannelMode.ChannelOperator, nick);
             }
         }
 
@@ -73,7 +76,7 @@ namespace LabMonitoring
 
         private void SendMultilineText(string text)
         {
-            string[] texts = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] texts = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var t in texts)
             {
                 conn.Sender.PublicMessage(channel, t);
@@ -82,7 +85,7 @@ namespace LabMonitoring
 
         private void SendMultilinePrivateText(string nick, string text)
         {
-            string[] texts = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            string[] texts = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var t in texts)
             {
                 conn.Sender.PrivateMessage(nick, t);
@@ -207,7 +210,17 @@ namespace LabMonitoring
         /// </summary>
         public void OnDisconnected()
         {
-            DebugLog("Connection to the server has been closed.");
+            Log("Connection to the server has been closed.");
+            if (++retryCount < 6)
+            {
+                Log("Retrying... " + retryCount + "/5");
+                CreateConnection();
+                Start();
+            }
+            else
+            {
+                Log("Retrying failed.");
+            }
         }
     }
 }
