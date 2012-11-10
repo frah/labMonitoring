@@ -70,6 +70,7 @@ namespace LabMonitoring
                 {
                     IICalendarCollection cal = iCalendar.LoadFromUri(new Uri(kvp.Key));
                     IList<Occurrence> events = cal.GetOccurrences(DateTime.Today, DateTime.Today.AddDays(1));
+                    var posts = new Dictionary<string, DateTime>();
 
                     foreach (Occurrence ev in events)
                     {
@@ -89,7 +90,7 @@ namespace LabMonitoring
                             if (!rc.Start.Local.AddDays(1).Equals(DateTime.Today)) continue;
                             /* All day event */
                             sbb.Append("終日");
-                            postTime = DateTime.Now.AddMinutes(3);
+                            postTime = new DateTime(0);
                         }
                         else
                         {
@@ -99,14 +100,8 @@ namespace LabMonitoring
                                 start.Hour, start.Minute, start.Second);
                         }
                         sbb.Append(")");
-                        calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(sbb.ToString()); }, postTime));
-                        if (!rc.IsAllDay)
-                        {
-                            calTimer.Add(
-                                TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(sbb.ToString().Replace("次の予定", "リマインダ")); },
-                                postTime.AddMinutes(-15))
-                            );
-                        }
+
+                        posts.Add(sbb.ToString(), postTime);
 
                         /* ボッチ飯警報 */
                         if (bottiFlag && rc.Summary.Contains("江藤"))
@@ -115,9 +110,26 @@ namespace LabMonitoring
                         }
                     }
 
-                    if (events.Count > 0)
+                    if (posts.Count > 0)
                     {
-                        sb.Append(kvp.Value).Append("の予定が").Append(events.Count).Append("件, ");
+                        foreach (var p in posts)
+                        {
+                            if (p.Value.Equals(new DateTime(0)))
+                            {
+                                /* all day event */
+                                calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(p.Key); }, 0));
+                            }
+                            else
+                            {
+                                calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(p.Key); }, p.Value));
+                                calTimer.Add(
+                                    TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(p.Key.Replace("次の予定", "リマインダ")); },
+                                    p.Value.AddMinutes(-15))
+                                );
+                            }
+                        }
+
+                        sb.Append(kvp.Value).Append("の予定が").Append(posts.Count).Append("件, ");
                     }
                 }
                 catch (Exception ex)
