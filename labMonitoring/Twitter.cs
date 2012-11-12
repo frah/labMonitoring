@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using Twitterizer;
 using Twitterizer.Streaming;
 
@@ -163,6 +164,56 @@ namespace LabMonitoring
         }
 
         /// <summary>
+        /// 投稿テキストを得る
+        /// </summary>
+        /// <param name="status">対象ツイート</param>
+        /// <returns>投稿テキスト</returns>
+        public delegate string GetPostText(TwitterStatus status);
+        /// <summary>
+        /// 指定された正規表現にマッチするツイートに反応して投稿を行うBOTを定義する
+        /// </summary>
+        /// <param name="regex">対象フィルタ</param>
+        /// <param name="text">返答を生成するコールバック関数</param>
+        public void AddSimpleUserBot(string regex, GetPostText text)
+        {
+            DebugLog("Define simple bot: target-> " + Regex.Escape(regex));
+            NewUserStatusEvent += (a, b) =>
+            {
+                if (Regex.IsMatch(a.Text, regex))
+                {
+                    StatusUpdate(text(a));
+                }
+            };
+        }
+        /// <summary>
+        /// 指定された正規表現にマッチするツイートに反応してリプライを返すBOTを定義する
+        /// </summary>
+        /// <param name="regex">対象フィルタ</param>
+        /// <param name="text">返答を生成するコールバック関数</param>
+        public void AddSimpleReplyUserBot(string regex, GetPostText text)
+        {
+            DebugLog("Define simple reply bot: target-> " + Regex.Escape(regex));
+            NewUserStatusEvent += (a, b) =>
+            {
+                if (Regex.IsMatch(a.Text, regex))
+                {
+                    StatusUpdate("@" + a.User.ScreenName + " " + text(a), new StatusUpdateOptions() { InReplyToStatusId = a.Id });
+                }
+            };
+        }
+        /// <summary>
+        /// 指定された正規表現にマッチするツイートに反応してランダムな文字列をリプライで返すBOTを定義する
+        /// </summary>
+        /// <param name="regex">対象フィルタ</param>
+        /// <param name="texts">返答テキスト</param>
+        public void AddSimpleReplyUserBot(string regex, params string[] texts)
+        {
+            AddSimpleReplyUserBot(regex, (x) => {
+                return texts[new Random().Next(texts.Length)];
+            });
+        }
+
+        /// <summary>
         /// Updateのラッパ
         /// </summary>
         /// <param name="text">本文</param>
@@ -170,6 +221,7 @@ namespace LabMonitoring
         /// <returns>投稿結果</returns>
         public TwitterResponse<TwitterStatus> StatusUpdate(string text, StatusUpdateOptions opt = null)
         {
+            DebugLog("Status update: " + text);
 #if DEBUG
             System.Console.WriteLine("[DEBUG] Update status: " + text);
             return new TwitterResponse<TwitterStatus>() { Result = RequestResult.Success };
@@ -192,6 +244,7 @@ namespace LabMonitoring
         /// <returns>投稿結果</returns>
         public TwitterResponse<TwitterStatus> StatusUpdateWithMedia(string text, byte[] b, StatusUpdateOptions opt = null)
         {
+            DebugLog("Status update with media: " + text);
 #if DEBUG
             System.Console.WriteLine("[DEBUG] Update status with media: " + text);
             return new TwitterResponse<TwitterStatus>() { Result = RequestResult.Success };

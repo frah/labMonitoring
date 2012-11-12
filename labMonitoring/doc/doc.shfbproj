@@ -22,7 +22,7 @@
       <DocumentationSource sourceFile="..\..\labMonitoring.sln" xmlns="" />
     </DocumentationSources>
     <PresentationStyle>vs2010</PresentationStyle>
-    <HelpFileFormat>0</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1</HelpFileFormat>
     <KeepLogFile>False</KeepLogFile>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in

@@ -76,25 +76,19 @@ namespace LabMonitoring
             t.LogOutput = output;
             c = new Camera(output);
             t.NewUserStatusEvent += c.HandleStatus;
-            t.NewUserStatusEvent += (a, b) =>
-            {
-                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "ぬ[\n\r]?る[\n\r]?ぽ"))
-                {
-                    string[] text = { "ｶﾞｯ", "■━⊂(　・∀・) 彡 ｶﾞｯ☆`Д´)ﾉ", "ヽ( ・∀・)ﾉ┌┛ｶﾞｯΣ(ﾉ`Д´)ﾉ" };
-                    var opt = new Twitterizer.StatusUpdateOptions();
-                    opt.InReplyToStatusId = a.Id;
-                    t.StatusUpdate("@" + a.User.ScreenName + " " + text[new Random().Next(text.Length)], opt);
-                    b("ｶﾞｯ to @" + a.User.ScreenName);
-                }
-            };
-            t.NewUserStatusEvent += (a, b) =>
-            {
-                if (System.Text.RegularExpressions.Regex.IsMatch(a.Text, "((眠|ねむ)い|ねむねむ|[寝ね]てない|寝不足)"))
-                {
+            t.AddSimpleReplyUserBot("ぬ[\n\r]?る[\n\r]?ぽ", "ｶﾞｯ", "■━⊂(　・∀・) 彡 ｶﾞｯ☆`Д´)ﾉ", "ヽ( ・∀・)ﾉ┌┛ｶﾞｯΣ(ﾉ`Д´)ﾉ");
+            t.AddSimpleReplyUserBot("((眠|ねむ)い|ねむねむ|[寝ね]てない|寝不足)",
+                (x) => {
                     string[] kao = { "", "(☝ ՞ਊ ՞)☝", "(´◉◞౪◟◉)", "(´☣益☣)" };
-                    Twitter.GetInstance().StatusUpdate("@" + a.User.ScreenName + " " + kao[new Random().Next(kao.Length)] + " 寝ろ #nero", new Twitterizer.StatusUpdateOptions() { InReplyToStatusId = a.Id });
+                    return kao[new Random().Next(kao.Length)] + " 寝ろ #nero";
                 }
-            };
+            );
+            t.AddSimpleUserBot("(暴発)",
+                (x) => {
+                    string[] kao = { "(╯⊙ ⊱ ⊙╰ )", "(◉◞౪◟◉｀)", "ʅ(◔౪◔ ) ʃ", "✌(՞ਊ ՞)✌" };
+                    return string.Format("{0}> {1} (by {2})", x.Text, kao[new Random().Next(kao.Length)], x.User.ScreenName);
+                }
+            );
 
             kamatte = new KamatteBot(output);
             t.NewPublicStatusEvent += kamatte.HandleStatus;
