@@ -114,17 +114,22 @@ namespace LabMonitoring
                     {
                         foreach (var p in posts)
                         {
-                            if (p.Value.Equals(new DateTime(0)))
+                            var key = p.Key;
+                            var value = p.Value;
+                            if (value.Equals(new DateTime(0)))
                             {
                                 /* all day event */
-                                calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(p.Key); }, 0));
+                                calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(key); }, 0));
                             }
                             else
                             {
-                                calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(p.Key); }, p.Value));
+                                calTimer.Add(TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(key); }, value));
                                 calTimer.Add(
-                                    TimerUtil.OnceTimer((x) => { Twitter.GetInstance().StatusUpdate(p.Key.Replace("次の予定", "リマインダ")); },
-                                    p.Value.AddMinutes(-15))
+                                    TimerUtil.OnceTimer((x) =>
+                                    {
+                                        Twitter.GetInstance().StatusUpdate(key.Replace("次の予定", "リマインダ"));
+                                    },
+                                    value.AddMinutes(-15))
                                 );
                             }
                         }
